@@ -1,3 +1,5 @@
+package logic;
+
 import java.io.Serializable;
 
 // Implementamos Serializable para que sea fácil hacer el SaveData después
