@@ -1,3 +1,5 @@
 Proyecto de programacion orientada a objetos
-semestre 2
-Colaboradores: Ryes Cortes Francisco Angel
+Semestre 2
+Colaboradores: 
+
+Reyes Cortes Francisco Angel
