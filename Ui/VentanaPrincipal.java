@@ -1,6 +1,8 @@
 package Ui;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -11,6 +13,7 @@ public class VentanaPrincipal extends JFrame {
     public VentanaPrincipal() {
         configurarVentana();
         inicializarComponentes();
+        inicializarEventos();
         setVisible(true);
     }
 
@@ -31,7 +34,7 @@ public class VentanaPrincipal extends JFrame {
 
         // Título Principal
         JLabel lblTitulo = new JLabel("Pokémon", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 36));
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 108));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
 
         // Panel central para botones
@@ -56,6 +59,9 @@ public class VentanaPrincipal extends JFrame {
         btnPeleas.setFont(new Font("Arial", Font.PLAIN, 20));
         btnPokedex.setFont(new Font("Arial", Font.PLAIN, 20));
 
+        btnPeleas.setFocusPainted(false);
+        btnPokedex.setFocusPainted(false);
+
         // Los agregamos al Panel
         contenedorBotones.add(btnPeleas);
         contenedorBotones.add(btnPokedex);
@@ -68,11 +74,16 @@ public class VentanaPrincipal extends JFrame {
         add(panelPrincipal);
     }
 
-    public JButton getBtnPeleas() {
-        return btnPeleas;
-    }
+    // Metodo para inicializar los eventos de los botones, para abrir las ventanas secundarias
+    private void inicializarEventos() {
+        btnPeleas.addActionListener(e -> {
+            setVisible(false);
+            new VentanaBatallas(this);
+        });
 
-    public JButton getBtnPokedex() {
-        return btnPokedex;
+        btnPokedex.addActionListener(e -> {
+            setVisible(false);
+            new VentanaPokedex(this);
+        });
     }
 }
