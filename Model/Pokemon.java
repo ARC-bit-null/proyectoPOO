@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 // Implementamos Serializable para que sea fácil hacer el SaveData después
 public class Pokemon implements Serializable {
+    private int id;
     private String nombre;
     private String tipo;
     private int hp;
@@ -12,7 +13,8 @@ public class Pokemon implements Serializable {
     private int nivelEvolucion;
     private String nombreEvolucion;
 
-    public Pokemon(String nombre, String tipo, int hp, int nivel, int nivelEvolucion, String nombreEvolucion) {
+    public Pokemon(int id, String nombre, String tipo, int hp, int nivel, int nivelEvolucion, String nombreEvolucion) {
+        this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.hp = hp;
@@ -34,14 +36,40 @@ public class Pokemon implements Serializable {
     }
 
     // Getters y Setters
-    public String getNombre() { return nombre; }
-    public String getTipo() { return tipo; }
-    public int getHp() { return hp; }
-    public int getHpMax() { return hpMax; }
-    public int getNivel() { return nivel; }
-    public void setNivel(int nivel) { this.nivel = nivel; }
-    public String getNombreEvolucion() { return nombreEvolucion; }
-    
-    public void subirNivel() { this.nivel++; }
+    public int getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public int getHpMax() {
+        return hpMax;
+    }
+
+    public int getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
+
+    public String getNombreEvolucion() {
+        return nombreEvolucion;
+    }
+
+    public void subirNivel() {
+        this.nivel++;
+    }
 }
 
