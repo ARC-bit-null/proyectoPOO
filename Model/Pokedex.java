@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+package Model;
 
 public class Pokedex {
     public static Pokemon crearPokemon(String nombre, int nivel) {

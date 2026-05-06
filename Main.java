@@ -1,7 +1,17 @@
+import Model.DataManager;
+import Model.Pokedex;
+import Model.Pokemon;
+import Ui.VentanaPrincipal;
+
+import javax.swing.*;
+
 public class Main {
     public static void main(String[] args) {
-        // 1. Intentar cargar partida
-        Pokemon miPokemon = DataManager.cargar();
+        SwingUtilities.invokeLater(() -> new VentanaPrincipal());
+
+        /*
+        1. Intentar cargar partida
+        Pokemon miPokemon = DataManager.cargarPartida();
 
         if (miPokemon == null) {
             System.out.println("Creando nueva partida...");
@@ -21,7 +31,8 @@ public class Main {
         }
 
         // 4. Guardar progreso
-        DataManager.guardar(miPokemon);
+        DataManager.guardarPartida(miPokemon);
         System.out.println("Progreso guardado.");
+         */
     }
 }
