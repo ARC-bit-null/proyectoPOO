@@ -1,8 +1,6 @@
 package Ui;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -47,7 +45,7 @@ public class VentanaPrincipal extends JFrame {
         contenedorBotones.setBackground(new Color(245, 245, 245));
 
         // Botones que iran dentro del panel central
-        btnPeleas = new JButton("Batallas Pokemon");
+        btnPeleas = new JButton("Jugar");
         btnPokedex = new JButton("Pokedex");
 
         // Dimenciones basicas de los botones
@@ -78,7 +76,7 @@ public class VentanaPrincipal extends JFrame {
     private void inicializarEventos() {
         btnPeleas.addActionListener(e -> {
             setVisible(false);
-            new VentanaBatallas(this);
+            new VentanaPartidas(this);
         });
 
         btnPokedex.addActionListener(e -> {

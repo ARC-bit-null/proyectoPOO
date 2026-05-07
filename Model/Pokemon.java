@@ -8,17 +8,17 @@ public class Pokemon implements Serializable {
     private String nombre;
     private String tipo;
     private int hp;
-    private int hpMax;
+    private int dano;
     private int nivel;
     private int nivelEvolucion;
     private String nombreEvolucion;
 
-    public Pokemon(int id, String nombre, String tipo, int hp, int nivel, int nivelEvolucion, String nombreEvolucion) {
+    public Pokemon(int id, String nombre, String tipo, int hp,int dano, int nivel, int nivelEvolucion, String nombreEvolucion) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.hp = hp;
-        this.hpMax = hp;
+        this.dano = dano;
         this.nivel = nivel;
         this.nivelEvolucion = nivelEvolucion;
         this.nombreEvolucion = nombreEvolucion;
@@ -52,8 +52,8 @@ public class Pokemon implements Serializable {
         return hp;
     }
 
-    public int getHpMax() {
-        return hpMax;
+    public int getDano() {
+        return dano;
     }
 
     public int getNivel() {

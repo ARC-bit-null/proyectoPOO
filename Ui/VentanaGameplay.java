@@ -4,20 +4,19 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class VentanaBatallas extends JFrame {
+public class VentanaGameplay extends JFrame {
 
-    public VentanaBatallas(VentanaPrincipal ventanaPrincipal) {
-        setTitle("Batallas Pokemon");
-        setSize(800, 600);
+    public VentanaGameplay(VentanaPartidas ventanaPartidas) {
+        setTitle("Gameplay");
+        setSize(1000, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
 
-        // Metodo para al momento de cerrar la ventana abrir la principal
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                ventanaPrincipal.setVisible(true);
+                ventanaPartidas.setVisible(true);
             }
         });
 
