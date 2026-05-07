@@ -55,8 +55,8 @@ public class DataManager {
         return false;
     }
 
-
+    // Método para obtener la ruta del archivo correspondiente a un slot de partida
     private static String obtenerRutaArchivo(int slot) {
-        return "partida" + slot + ".dat";
+        return "PartidasSaves/partida" + slot + ".dat";
     }
 }

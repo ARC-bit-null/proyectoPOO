@@ -139,8 +139,10 @@ public class VentanaPartidas extends JFrame {
         setVisible(false);
 
         if (DataManager.existePartida(slot)) {
-            new VentanaGameplay(this);
+            // Si la partida existe, la cargamos desde el archivo y abrimos la ventana de gameplay
+            new VentanaGameplay(this, DataManager.cargarPartida(slot));
         } else {
+            // Si la partida no existe, abrimos la ventana para crearla
             new VentanaInfoPartida(this, slot);
         }
     }

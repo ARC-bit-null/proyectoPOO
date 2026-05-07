@@ -1,5 +1,7 @@
 package Ui;
 
+import Model.DataManager;
+import Model.Partida;
 import Model.Pokedex;
 import Model.Pokemon;
 
@@ -22,9 +24,15 @@ public class VentanaInfoPartida extends JFrame {
     private JPanel panelCharmander;
     private JPanel panelSquirtle;
 
-    private Pokemon pokemonSeleccionado;
+    private int idPokemonSeleccionado = -1;
+
+    // Variable para guardar el slot en el que se creará la partida
+    private int slot;
 
     public VentanaInfoPartida(VentanaPartidas ventanaPartidas, int slot) {
+        // Guardamos el slot recibido para poder usarlo al crear la partida
+        this.slot = slot;
+
         setTitle("Crear Partida");
         setSize(900, 650);
         setLocationRelativeTo(null);
@@ -39,7 +47,7 @@ public class VentanaInfoPartida extends JFrame {
         });
 
         inicializarComponentes(slot);
-        inicializarEventos();
+        inicializarEventos(ventanaPartidas);
 
         setVisible(true);
     }
@@ -79,9 +87,9 @@ public class VentanaInfoPartida extends JFrame {
         JPanel panelIniciales = new JPanel(new GridLayout(1, 3, 20, 20));
         panelIniciales.setBackground(new Color(245, 245, 245));
 
-        panelBulbasaur = crearTarjetaPokemon(Pokedex.crearPokemon("bulbasaur", 5));
-        panelCharmander = crearTarjetaPokemon(Pokedex.crearPokemon("charmander", 5));
-        panelSquirtle = crearTarjetaPokemon(Pokedex.crearPokemon("squirtle", 5));
+        panelBulbasaur = crearTarjetaPokemon(Pokedex.crearPokemon(1, 5));
+        panelCharmander = crearTarjetaPokemon(Pokedex.crearPokemon(4, 5));
+        panelSquirtle = crearTarjetaPokemon(Pokedex.crearPokemon(7, 5));
 
         panelIniciales.add(panelBulbasaur);
         panelIniciales.add(panelCharmander);
@@ -172,13 +180,14 @@ public class VentanaInfoPartida extends JFrame {
         tarjeta.add(panelSuperior, BorderLayout.NORTH);
         tarjeta.add(panelCentro, BorderLayout.CENTER);
 
+        // Guardamos el objeto Pokemon en la tarjeta para poder recuperarlo cuando se haga clic
         tarjeta.putClientProperty("pokemon", pokemon);
 
         return tarjeta;
     }
 
     // Metodo que nos permite dar clic sobre las tarjetas
-    private void inicializarEventos() {
+    private void inicializarEventos(VentanaPartidas ventanaPartidas) {
         panelBulbasaur.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -199,14 +208,19 @@ public class VentanaInfoPartida extends JFrame {
                 seleccionarPokemon(panelSquirtle);
             }
         });
+
+        // Evento del botón para crear la partida, guardarla y abrir la ventana de gameplay
+        btnCrear.addActionListener(e -> crearPartida(ventanaPartidas));
     }
 
-    // Metodo para mostrar al pokemon seleccionado
+    // Metodo para guardar el pokemon seleccionado y remarcar visualmente la tarjeta elegida
     private void seleccionarPokemon(JPanel panelSeleccionado) {
         restaurarBordes();
 
         panelSeleccionado.setBorder(new LineBorder(new Color(80, 160, 90), 4, true));
-        pokemonSeleccionado = (Pokemon) panelSeleccionado.getClientProperty("pokemon");
+
+        Pokemon pokemon = (Pokemon) panelSeleccionado.getClientProperty("pokemon");
+        idPokemonSeleccionado = pokemon.getId();
 
         btnCrear.setEnabled(true);
     }
@@ -228,5 +242,36 @@ public class VentanaInfoPartida extends JFrame {
         }
 
         return icono;
+    }
+
+    // Metodo para crear el objeto partida, guardarlo en archivo y abrir la ventana de gameplay
+    private void crearPartida(VentanaPartidas ventanaPartidas) {
+        // Obtenemos el nombre del jugador escrito en el textbox
+        String nombreJugador = txtNombreJugador.getText().trim();
+
+        // Validamos que el nombre del jugador no esté vacío
+        if (nombreJugador.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debes ingresar el nombre del jugador.");
+            return;
+        }
+
+        // Validamos que exista un pokemon inicial seleccionado
+        if (idPokemonSeleccionado == -1) {
+            JOptionPane.showMessageDialog(this, "Debes seleccionar un Pokémon inicial.");
+            return;
+        }
+
+        // Creamos el pokemon inicial usando el id seleccionado y los datos base de la pokedex
+        Pokemon pokemonInicial = Pokedex.crearPokemon(idPokemonSeleccionado, 5);
+
+        // Creamos el objeto partida con el slot actual, el nombre del jugador y su pokemon inicial
+        Partida partida = new Partida(slot, nombreJugador, pokemonInicial);
+
+        // Guardamos la partida en su archivo correspondiente
+        DataManager.guardarPartida(partida);
+
+        // Cerramos esta ventana y abrimos la ventana de gameplay con la partida creada
+        dispose();
+        new VentanaGameplay(ventanaPartidas, partida);
     }
 }
