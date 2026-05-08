@@ -2,6 +2,7 @@ package Model;
 
 import java.io.*;
 
+
 public class DataManager {
 
     // Método para guardar la información de la partida del jugador en un archivo
@@ -57,6 +58,16 @@ public class DataManager {
 
     // Método para obtener la ruta del archivo correspondiente a un slot de partida
     private static String obtenerRutaArchivo(int slot) {
-        return "PartidasSaves/partida" + slot + ".dat";
+        // Nombre de la carpeta donde se guardarán las partidas
+        String nombreCarpeta = "PartidasSaves";
+
+        File carpeta = new File(nombreCarpeta);
+
+        // Si la carpeta no existe, el programa la crea automáticamente
+        if (!carpeta.exists()) {
+            carpeta.mkdir();
+        }
+
+        return nombreCarpeta + "/partida" + slot + ".dat";
     }
 }
