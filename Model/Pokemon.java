@@ -2,12 +2,12 @@ package Model;
 
 import java.io.Serializable;
 
-// Implementamos Serializable para que sea fácil hacer el SaveData después
 public class Pokemon implements Serializable {
     private int id;
     private String nombre;
     private String tipo;
     private int hp;
+    private int hpMax;
     private int dano;
     private int velocidad;
     private int nivel;
@@ -19,6 +19,7 @@ public class Pokemon implements Serializable {
         this.nombre = nombre;
         this.tipo = tipo;
         this.hp = hp;
+        this.hpMax = hp;
         this.dano = dano;
         this.velocidad = velocidad;
         this.nivel = nivel;
@@ -35,6 +36,37 @@ public class Pokemon implements Serializable {
     // Lógica de evolución
     public boolean puedeEvolucionar() {
         return nivel >= nivelEvolucion && !nombreEvolucion.equals("Ninguna");
+    }
+
+    // Metodo para saber si el pokemon fue derrotado
+    public boolean estaDerrotado() {
+        return hp == 0;
+    }
+
+    // Metodo para curar cierta cantidad de vida sin sobrepasar la vida máxima
+    public void curarHp(int cantidad) {
+        if (hp > 0) {
+            hp += cantidad;
+            if (hp > hpMax) {
+                hp = hpMax;
+            }
+        }
+    }
+
+    // Metodo para revivir al pokemon restaurando toda su vida máxima
+    public void revivir() {
+        if (hp == 0) {
+            hp = hpMax;
+        }
+    }
+    // Metodo para aumentar el daño del pokemon durante el combate
+    public void aumentarDano(int cantidad) {
+        dano += cantidad;
+    }
+
+    // Metodo para aumentar la velocidad del pokemon durante el combate
+    public void aumentarVelocidad(int cantidad) {
+        velocidad += cantidad;
     }
 
     // Getters y Setters
@@ -68,6 +100,14 @@ public class Pokemon implements Serializable {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+    public int getHpMax() {
+        return hpMax;
+    }
+
+    public void setHpMax(int hpMax) {
+        this.hpMax = hpMax;
     }
 
     public int getDano() {
