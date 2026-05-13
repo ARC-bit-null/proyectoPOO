@@ -1,6 +1,6 @@
-package Ui;
+package view;
 
-import Model.DataManager;
+import persistance.DataManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

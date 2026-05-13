@@ -1,7 +1,6 @@
-import Model.DataManager;
-import Model.Pokedex;
-import Model.Pokemon;
-import Ui.VentanaPrincipal;
+package main;
+
+import view.VentanaPrincipal;
 
 import javax.swing.*;
 

@@ -1,8 +1,8 @@
-package Ui;
+package view;
 
-import Model.Partida;
-import Model.Pokedex;
-import Model.Pokemon;
+import model.Partida;
+import model.Pokedex;
+import model.Pokemon;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -261,7 +261,7 @@ public class VentanaPvpEquipos extends JFrame {
     private void actualizarListaPokemones() {
         panelListaPokemones.removeAll();
 
-        for (Pokemon pokemon : partida.getPokemonesCapturados()) {
+        for (Pokemon pokemon : partida.getJugador().getPokemonesCapturados()) {
             JPanel tarjeta = crearTarjetaPokemonDisponible(pokemon);
             panelListaPokemones.add(tarjeta);
             panelListaPokemones.add(Box.createVerticalStrut(10));

@@ -1,9 +1,10 @@
-package Ui;
+package view;
 
-import Model.DataManager;
-import Model.Partida;
-import Model.Pokedex;
-import Model.Pokemon;
+import persistance.DataManager;
+import model.Partida;
+import model.Pokedex;
+import model.Pokemon;
+import model.Jugador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -264,8 +265,11 @@ public class VentanaInfoPartida extends JFrame {
         // Creamos el pokemon inicial usando el id seleccionado y los datos base de la pokedex
         Pokemon pokemonInicial = Pokedex.crearPokemon(idPokemonSeleccionado, 5);
 
-        // Creamos el objeto partida con el slot actual, el nombre del jugador y su pokemon inicial
-        Partida partida = new Partida(slot, nombreJugador, pokemonInicial);
+        // Creamos el jugador con el nombre del jugador y su pokemon inicial
+        Jugador jugador = new Jugador(nombreJugador, pokemonInicial);
+
+        // Creamos el objeto partida con el slot actual y el jugador creado
+        Partida partida = new Partida(slot, jugador);
 
         // Guardamos la partida en su archivo correspondiente
         DataManager.guardarPartida(partida);

@@ -1,6 +1,6 @@
-package Ui;
+package view;
 
-import Model.Partida;
+import model.Partida;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -67,12 +67,12 @@ public class VentanaGameplay extends JFrame {
         ));
 
         // Mostramos el nombre del jugador
-        JLabel lblJugador = new JLabel("Jugador: " + partida.getNombreJugador(), SwingConstants.CENTER);
+        JLabel lblJugador = new JLabel("Jugador: " + partida.getJugador().getNombre(), SwingConstants.CENTER);
         lblJugador.setFont(new Font("Arial", Font.BOLD, 22));
         lblJugador.setForeground(new Color(40, 40, 40));
 
         // Mostramos el pokemon inicial de la partida
-        JLabel lblPokemonInicial = new JLabel("Pokémon inicial: " + partida.getPokemonInicial().getNombre(), SwingConstants.CENTER);
+        JLabel lblPokemonInicial = new JLabel("Pokémon inicial: " + partida.getJugador().getPokemonInicial().getNombre(), SwingConstants.CENTER);
         lblPokemonInicial.setFont(new Font("Arial", Font.PLAIN, 20));
         lblPokemonInicial.setForeground(new Color(100, 100, 100));
 

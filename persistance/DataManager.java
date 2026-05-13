@@ -1,4 +1,6 @@
-package Model;
+package persistance;
+
+import model.Partida;
 
 import java.io.*;
 

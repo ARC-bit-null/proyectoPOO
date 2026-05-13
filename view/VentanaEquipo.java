@@ -1,8 +1,8 @@
-package Ui;
+package view;
 
-import Model.DataManager;
-import Model.Partida;
-import Model.Pokemon;
+import persistance.DataManager;
+import model.Partida;
+import model.Pokemon;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -157,7 +157,7 @@ public class VentanaEquipo extends JFrame {
 
     // Metodo para actualizar visualmente los 6 espacios del equipo
     private void actualizarVistaEquipo() {
-        ArrayList<Pokemon> equipoActual = partida.getEquipo().getPokemones();
+        ArrayList<Pokemon> equipoActual = partida.getJugador().getEquipo().getPokemones();
 
         for (int i = 0; i < 6; i++) {
             JPanel panel = panelesEquipo[i];
@@ -202,7 +202,7 @@ public class VentanaEquipo extends JFrame {
     private void actualizarListaPokemones() {
         panelListaPokemones.removeAll();
 
-        ArrayList<Pokemon> pokemonesCapturados = partida.getPokemonesCapturados();
+        ArrayList<Pokemon> pokemonesCapturados = partida.getJugador().getPokemonesCapturados();
 
         JLabel lblSubtitulo = new JLabel("Pokémon del jugador");
         lblSubtitulo.setFont(new Font("Arial", Font.BOLD, 24));
@@ -310,19 +310,19 @@ public class VentanaEquipo extends JFrame {
             return;
         }
 
-        ArrayList<Pokemon> equipoActual = partida.getEquipo().getPokemones();
+        ArrayList<Pokemon> equipoActual = partida.getJugador().getEquipo().getPokemones();
 
         if (equipoActual.contains(pokemonSeleccionadoLista)) {
             JOptionPane.showMessageDialog(this, "Ese Pokémon ya está dentro del equipo.");
             return;
         }
 
-        if (partida.getEquipo().estaLleno()) {
+        if (partida.getJugador().getEquipo().estaLleno()) {
             JOptionPane.showMessageDialog(this, "El equipo ya tiene 6 Pokémon.");
             return;
         }
 
-        partida.getEquipo().agregarPokemon(pokemonSeleccionadoLista);
+        partida.getJugador().getEquipo().agregarPokemon(pokemonSeleccionadoLista);
 
         // Guardamos los cambios en la partida
         DataManager.guardarPartida(partida);
@@ -341,7 +341,7 @@ public class VentanaEquipo extends JFrame {
             return;
         }
 
-        partida.getEquipo().eliminarPokemon(pokemonSeleccionadoEquipo);
+        partida.getJugador().getEquipo().eliminarPokemon(pokemonSeleccionadoEquipo);
 
         // Guardamos los cambios en la partida
         DataManager.guardarPartida(partida);

@@ -1,6 +1,6 @@
-package Ui;
+package view;
 
-import Model.Pokemon;
+import model.Pokemon;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
