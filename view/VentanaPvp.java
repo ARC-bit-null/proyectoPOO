@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import model.InventarioCombate;
 
 public class VentanaPvp extends JFrame {
 
@@ -42,17 +43,9 @@ public class VentanaPvp extends JFrame {
     // Guardamos si el combate ya terminó
     private boolean combateTerminado;
 
-    // Contadores de objetos del Jugador 1
-    private int sprayJ1 = 3;
-    private int revivirJ1 = 3;
-    private int bandaJ1 = 1;
-    private int xSpeedJ1 = 1;
-
-    // Contadores de objetos del Jugador 2
-    private int sprayJ2 = 3;
-    private int revivirJ2 = 3;
-    private int bandaJ2 = 1;
-    private int xSpeedJ2 = 1;
+    // Inventarios temporales de combate de ambos jugadores
+    private InventarioCombate inventarioJugador1;
+    private InventarioCombate inventarioJugador2;
 
     // Declaramos labels para mostrar la información del pokemon activo del Jugador 1
     private JLabel lblNombreJ1;
@@ -92,6 +85,10 @@ public class VentanaPvp extends JFrame {
         // Guardamos los equipos recibidos
         this.equipoJugador1 = equipoJugador1;
         this.equipoJugador2 = equipoJugador2;
+
+        // Creamos los inventarios temporales de combate de ambos jugadores
+        inventarioJugador1 = new InventarioCombate();
+        inventarioJugador2 = new InventarioCombate();
 
         // El primer pokemon del equipo será el pokemon activo inicial
         indiceActivoJ1 = 0;
@@ -375,8 +372,19 @@ public class VentanaPvp extends JFrame {
 
     // Metodo para actualizar los contadores de objetos de ambos jugadores
     private void actualizarContadoresObjetos() {
-        lblObjetosJ1.setText("<html>Spray: " + sprayJ1 + " | Revivir: " + revivirJ1 + "<br>Banda: " + bandaJ1 + " | X Speed: " + xSpeedJ1 + "</html>");
-        lblObjetosJ2.setText("<html>Spray: " + sprayJ2 + " | Revivir: " + revivirJ2 + "<br>Banda: " + bandaJ2 + " | X Speed: " + xSpeedJ2 + "</html>");
+        lblObjetosJ1.setText(
+                "<html>Spray: " + inventarioJugador1.getSprayCurativo() +
+                        " | Revivir: " + inventarioJugador1.getRevivir() +
+                        "<br>Banda: " + inventarioJugador1.getBandaEspecial() +
+                        " | X Speed: " + inventarioJugador1.getXSpeed() + "</html>"
+        );
+
+        lblObjetosJ2.setText(
+                "<html>Spray: " + inventarioJugador2.getSprayCurativo() +
+                        " | Revivir: " + inventarioJugador2.getRevivir() +
+                        "<br>Banda: " + inventarioJugador2.getBandaEspecial() +
+                        " | X Speed: " + inventarioJugador2.getXSpeed() + "</html>"
+        );
     }
 
     // Metodo para actualizar si los botones deben o no seguir activos
@@ -441,7 +449,7 @@ public class VentanaPvp extends JFrame {
         if (seleccion == null) return;
 
         if (seleccion.equals("Spray curativo")) {
-            if (sprayJ1 <= 0) {
+            if (!inventarioJugador1.puedeUsarSprayCurativo()) {
                 JOptionPane.showMessageDialog(this, "Jugador 1 ya no tiene Spray curativo.");
                 return;
             }
@@ -457,7 +465,7 @@ public class VentanaPvp extends JFrame {
         }
 
         if (seleccion.equals("Revivir")) {
-            if (revivirJ1 <= 0) {
+            if (!inventarioJugador1.puedeUsarRevivir()) {
                 JOptionPane.showMessageDialog(this, "Jugador 1 ya no tiene Revivir.");
                 return;
             }
@@ -471,7 +479,7 @@ public class VentanaPvp extends JFrame {
         }
 
         if (seleccion.equals("Banda especial")) {
-            if (bandaJ1 <= 0) {
+            if (!inventarioJugador1.puedeUsarBandaEspecial()) {
                 JOptionPane.showMessageDialog(this, "Jugador 1 ya no tiene Banda especial.");
                 return;
             }
@@ -482,7 +490,7 @@ public class VentanaPvp extends JFrame {
         }
 
         if (seleccion.equals("X speed")) {
-            if (xSpeedJ1 <= 0) {
+            if (!inventarioJugador1.puedeUsarXSpeed()) {
                 JOptionPane.showMessageDialog(this, "Jugador 1 ya no tiene X speed.");
                 return;
             }
@@ -514,7 +522,7 @@ public class VentanaPvp extends JFrame {
         if (seleccion == null) return;
 
         if (seleccion.equals("Spray curativo")) {
-            if (sprayJ2 <= 0) {
+            if (!inventarioJugador2.puedeUsarSprayCurativo()) {
                 JOptionPane.showMessageDialog(this, "Jugador 2 ya no tiene Spray curativo.");
                 return;
             }
@@ -530,7 +538,7 @@ public class VentanaPvp extends JFrame {
         }
 
         if (seleccion.equals("Revivir")) {
-            if (revivirJ2 <= 0) {
+            if (!inventarioJugador2.puedeUsarRevivir()) {
                 JOptionPane.showMessageDialog(this, "Jugador 2 ya no tiene Revivir.");
                 return;
             }
@@ -544,7 +552,7 @@ public class VentanaPvp extends JFrame {
         }
 
         if (seleccion.equals("Banda especial")) {
-            if (bandaJ2 <= 0) {
+            if (!inventarioJugador2.puedeUsarBandaEspecial()) {
                 JOptionPane.showMessageDialog(this, "Jugador 2 ya no tiene Banda especial.");
                 return;
             }
@@ -555,7 +563,7 @@ public class VentanaPvp extends JFrame {
         }
 
         if (seleccion.equals("X speed")) {
-            if (xSpeedJ2 <= 0) {
+            if (!inventarioJugador2.puedeUsarXSpeed()) {
                 JOptionPane.showMessageDialog(this, "Jugador 2 ya no tiene X speed.");
                 return;
             }
@@ -751,27 +759,31 @@ public class VentanaPvp extends JFrame {
         Pokemon pokemonObjetivo = equipoJugador1.get(indiceSeleccionadoJ1);
 
         if ("SPRAY".equals(objetoJugador1)) {
-            pokemonObjetivo.curarHp(20);
-            sprayJ1--;
-            agregarMensaje("Jugador 1 usó Spray curativo en " + pokemonObjetivo.getNombre() + ".");
+            if (inventarioJugador1.usarSprayCurativo()) {
+                pokemonObjetivo.curarHp(20);
+                agregarMensaje("Jugador 1 usó Spray curativo en " + pokemonObjetivo.getNombre() + ".");
+            }
         }
 
         if ("REVIVIR".equals(objetoJugador1)) {
-            pokemonObjetivo.revivir();
-            revivirJ1--;
-            agregarMensaje("Jugador 1 usó Revivir en " + pokemonObjetivo.getNombre() + ".");
+            if (inventarioJugador1.usarRevivir()) {
+                pokemonObjetivo.revivir();
+                agregarMensaje("Jugador 1 usó Revivir en " + pokemonObjetivo.getNombre() + ".");
+            }
         }
 
         if ("BANDA".equals(objetoJugador1)) {
-            pokemonObjetivo.aumentarDano(10);
-            bandaJ1--;
-            agregarMensaje("Jugador 1 usó Banda especial en " + pokemonObjetivo.getNombre() + ". Su daño aumentó.");
+            if (inventarioJugador1.usarBandaEspecial()) {
+                pokemonObjetivo.aumentarDano(10);
+                agregarMensaje("Jugador 1 usó Banda especial en " + pokemonObjetivo.getNombre() + ". Su daño aumentó.");
+            }
         }
 
         if ("XSPEED".equals(objetoJugador1)) {
-            pokemonObjetivo.aumentarVelocidad(10);
-            xSpeedJ1--;
-            agregarMensaje("Jugador 1 usó X speed en " + pokemonObjetivo.getNombre() + ". Su velocidad aumentó.");
+            if (inventarioJugador1.usarXSpeed()) {
+                pokemonObjetivo.aumentarVelocidad(10);
+                agregarMensaje("Jugador 1 usó X speed en " + pokemonObjetivo.getNombre() + ". Su velocidad aumentó.");
+            }
         }
     }
 
@@ -780,27 +792,31 @@ public class VentanaPvp extends JFrame {
         Pokemon pokemonObjetivo = equipoJugador2.get(indiceSeleccionadoJ2);
 
         if ("SPRAY".equals(objetoJugador2)) {
-            pokemonObjetivo.curarHp(20);
-            sprayJ2--;
-            agregarMensaje("Jugador 2 usó Spray curativo en " + pokemonObjetivo.getNombre() + ".");
+            if (inventarioJugador2.usarSprayCurativo()) {
+                pokemonObjetivo.curarHp(20);
+                agregarMensaje("Jugador 2 usó Spray curativo en " + pokemonObjetivo.getNombre() + ".");
+            }
         }
 
         if ("REVIVIR".equals(objetoJugador2)) {
-            pokemonObjetivo.revivir();
-            revivirJ2--;
-            agregarMensaje("Jugador 2 usó Revivir en " + pokemonObjetivo.getNombre() + ".");
+            if (inventarioJugador2.usarRevivir()) {
+                pokemonObjetivo.revivir();
+                agregarMensaje("Jugador 2 usó Revivir en " + pokemonObjetivo.getNombre() + ".");
+            }
         }
 
         if ("BANDA".equals(objetoJugador2)) {
-            pokemonObjetivo.aumentarDano(10);
-            bandaJ2--;
-            agregarMensaje("Jugador 2 usó Banda especial en " + pokemonObjetivo.getNombre() + ". Su daño aumentó.");
+            if (inventarioJugador2.usarBandaEspecial()) {
+                pokemonObjetivo.aumentarDano(10);
+                agregarMensaje("Jugador 2 usó Banda especial en " + pokemonObjetivo.getNombre() + ". Su daño aumentó.");
+            }
         }
 
         if ("XSPEED".equals(objetoJugador2)) {
-            pokemonObjetivo.aumentarVelocidad(10);
-            xSpeedJ2--;
-            agregarMensaje("Jugador 2 usó X speed en " + pokemonObjetivo.getNombre() + ". Su velocidad aumentó.");
+            if (inventarioJugador2.usarXSpeed()) {
+                pokemonObjetivo.aumentarVelocidad(10);
+                agregarMensaje("Jugador 2 usó X speed en " + pokemonObjetivo.getNombre() + ". Su velocidad aumentó.");
+            }
         }
     }
 

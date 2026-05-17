@@ -157,7 +157,7 @@ public class VentanaInfoPartida extends JFrame {
         lblNombre.setFont(new Font("Arial", Font.BOLD, 24));
         lblNombre.setForeground(new Color(50, 50, 50));
 
-        JLabel lblTipo = new JLabel(pokemon.getTipo(), SwingConstants.CENTER);
+        JLabel lblTipo = new JLabel(String.valueOf(pokemon.getTipo()), SwingConstants.CENTER);
         lblTipo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblTipo.setForeground(new Color(180, 130, 130));
 

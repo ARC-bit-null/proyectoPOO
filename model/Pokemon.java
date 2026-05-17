@@ -5,22 +5,24 @@ import java.io.Serializable;
 public class Pokemon implements Serializable {
     private int id;
     private String nombre;
-    private String tipo;
+    private TipoPokemon tipo;
     private int hp;
     private int hpMax;
     private int dano;
+    private int defensa;
     private int velocidad;
     private int nivel;
     private int nivelEvolucion;
     private String nombreEvolucion;
 
-    public Pokemon(int id, String nombre, String tipo, int hp, int dano, int velocidad, int nivel, int nivelEvolucion, String nombreEvolucion) {
+    public Pokemon(int id, String nombre, TipoPokemon tipo, int hp, int dano, int defensa, int velocidad, int nivel, int nivelEvolucion, String nombreEvolucion) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.hp = hp;
         this.hpMax = hp;
         this.dano = dano;
+        this.defensa = defensa;
         this.velocidad = velocidad;
         this.nivel = nivel;
         this.nivelEvolucion = nivelEvolucion;
@@ -70,6 +72,8 @@ public class Pokemon implements Serializable {
     }
 
     // Getters y Setters
+
+
     public int getId() {
         return id;
     }
@@ -86,11 +90,11 @@ public class Pokemon implements Serializable {
         this.nombre = nombre;
     }
 
-    public String getTipo() {
+    public TipoPokemon getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoPokemon tipo) {
         this.tipo = tipo;
     }
 
@@ -102,14 +106,6 @@ public class Pokemon implements Serializable {
         this.hp = hp;
     }
 
-    public int getHpMax() {
-        return hpMax;
-    }
-
-    public void setHpMax(int hpMax) {
-        this.hpMax = hpMax;
-    }
-
     public int getDano() {
         return dano;
     }
@@ -118,12 +114,28 @@ public class Pokemon implements Serializable {
         this.dano = dano;
     }
 
+    public int getHpMax() {
+        return hpMax;
+    }
+
+    public void setHpMax(int hpMax) {
+        this.hpMax = hpMax;
+    }
+
     public int getVelocidad() {
         return velocidad;
     }
 
     public void setVelocidad(int velocidad) {
         this.velocidad = velocidad;
+    }
+
+    public int getDefensa() {
+        return defensa;
+    }
+
+    public void setDefensa(int defensa) {
+        this.defensa = defensa;
     }
 
     public int getNivel() {
