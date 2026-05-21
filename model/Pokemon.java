@@ -3,13 +3,15 @@ package model;
 import java.io.Serializable;
 
 public class Pokemon implements Serializable {
-    private int id;
+   private int xp = 0;
+   private int xpMax = 100; // La experiencia necesaria para el nivel 1
+   private int defensa //seria darle un valor inicial o tomarlo del contructor
+   private int id;
     private String nombre;
     private TipoPokemon tipo;
     private int hp;
     private int hpMax;
     private int dano;
-    private int defensa;
     private int velocidad;
     private int nivel;
     private int nivelEvolucion;
@@ -164,5 +166,46 @@ public class Pokemon implements Serializable {
 
     public void subirNivel() {
         this.nivel++;
+    }
+
+// Método para recalcular y escalar estadísticas al subir de nivel
+    public void calcularEstadisticasPokemon() {
+        this.hpMax = this.hpMax + 8; 
+        this.dano = this.dano + 3;
+        this.velocidad = this.velocidad + 2;
+        this.defensa = this.defensa + 2;
+        this.hp = this.hpMax; // El pokémon se cura completo al subir de nivel
+    }
+
+    // Método para gestionar la experiencia ganada en combate
+    public void ganarExperiencia(int cantidadXp) {
+        if (this.estaDerrotado()) return;
+
+        this.xp += cantidadXp;
+        System.out.println(this.nombre + " obtuvo " + cantidadXp + " puntos de XP.");
+
+        while (this.xp >= this.xpMax) {
+            this.xp -= this.xpMax;
+            this.nivel++;
+            this.xpMax = (int) (this.xpMax * 1.5); 
+            
+            System.out.println("¡Felicidades! ¡" + this.nombre + " subió al nivel " + this.nivel + "!");
+            
+            calcularEstadisticasPokemon(); // Escalamos sus estadísticas base
+
+            // Conexión con el sistema de evolución de Emanuel
+            if (puedeEvolucionar()) {
+                System.out.println("¡Atención! " + this.nombre + " está evolucionando en " + this.nombreEvolucion + "!");
+                this.nombre = this.nombreEvolucion;
+                this.dano += 10;
+                this.hpMax += 20;
+                this.hp = this.hpMax;
+            }
+        }
+    }
+
+    // Getter indispensable para que la CalculadoraDanio lea la defensa del rival
+    public int getDefensa() {
+        return this.defensa;
     }
 }
