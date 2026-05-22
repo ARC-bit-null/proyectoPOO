@@ -1,10 +1,10 @@
 package model;
 
-import battle.Tipo;
+import battle.SistemaTipos;
 
 public interface Habilidad {
     String getNombre();
-    Tipo getTipo();
+    SistemaTipos getTipo();
     int getPoderBase();
     void aplicarEfectoEspecial(Pokemon atacante, Pokemon defensor);
 }

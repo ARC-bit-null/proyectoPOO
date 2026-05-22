@@ -1,6 +1,6 @@
 package model;
 
-import battle.Tipo;
+import battle.SistemaTipos;
 
 public class AtaqueFuego implements Habilidad {
     private String nombre;
@@ -12,7 +12,7 @@ public class AtaqueFuego implements Habilidad {
     }
 
     @Override public String getNombre() { return nombre; }
-    @Override public Tipo getTipo() { return Tipo.FUEGO; }
+    @Override public SistemaTipos getTipo() { return SistemaTipos.FUEGO; }
     @Override public int getPoderBase() { return poderBase; }
 
     @Override

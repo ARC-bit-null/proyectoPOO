@@ -1,21 +1,21 @@
 package model;
 
-import battle.Tipo;
+import battle.SistemaTipos;
 
 public class AtaqueBasico implements Habilidad {
     private String nombre;
-    private Tipo tipo;
+    private SistemaTipos tipo;
     private int poderBase;
 
     // Constructor que te permite moldear cualquier ataque normal "en el aire"
-    public AtaqueBasico(String nombre, Tipo tipo, int poderBase) {
+    public AtaqueBasico(String nombre, SistemaTipos tipo, int poderBase) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.poderBase = poderBase;
     }
 
     @Override public String getNombre() { return nombre; }
-    @Override public Tipo getTipo() { return tipo; }
+    @Override public SistemaTipos getTipo() { return tipo; }
     @Override public int getPoderBase() { return poderBase; }
 
     @Override

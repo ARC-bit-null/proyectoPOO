@@ -1,9 +1,9 @@
 package battle;
 
-public enum Tipo {
+public enum SistemaTipos {
     FUEGO, AGUA, PLANTA, ELECTRICO, NORMAL;
    
-    public double obtenerEfectividadContra(Tipo defensor) {
+    public double obtenerEfectividadContra(SistemaTipos defensor) {
         // Ataques de FUEGO
         if (this == FUEGO) {
             if (defensor == PLANTA) return 2.0; // Súper efectivo
