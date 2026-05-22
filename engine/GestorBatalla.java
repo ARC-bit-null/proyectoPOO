@@ -2,7 +2,7 @@ package engine;
 
 import model.Pokemon;
 import model.Habilidad;
-import model.CalculadoraDanio;
+import battle.CalculadoraDanio;
 
 public class GestorBatalla {
     private Pokemon jugador;

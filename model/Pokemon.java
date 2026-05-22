@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Pokemon implements Serializable {
    private int xp = 0;
    private int xpMax = 100; // La experiencia necesaria para el nivel 1
-   private int defensa //seria darle un valor inicial o tomarlo del contructor
+   private int defensa; //seria darle un valor inicial o tomarlo del contructor
    private int id;
     private String nombre;
     private TipoPokemon tipo;
@@ -202,10 +202,5 @@ public class Pokemon implements Serializable {
                 this.hp = this.hpMax;
             }
         }
-    }
-
-    // Getter indispensable para que la CalculadoraDanio lea la defensa del rival
-    public int getDefensa() {
-        return this.defensa;
     }
 }

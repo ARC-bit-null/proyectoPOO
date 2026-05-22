@@ -1,4 +1,4 @@
-package model;
+package battle;
 
 public enum Tipo {
     FUEGO, AGUA, PLANTA, ELECTRICO, NORMAL;

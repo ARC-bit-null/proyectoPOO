@@ -1,4 +1,7 @@
-package model;
+package battle;
+
+import model.Habilidad;
+import model.Pokemon;
 
 public class CalculadoraDanio {
 

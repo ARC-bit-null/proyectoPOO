@@ -1,5 +1,7 @@
 package model;
 
+import battle.Tipo;
+
 public interface Habilidad {
     String getNombre();
     Tipo getTipo();

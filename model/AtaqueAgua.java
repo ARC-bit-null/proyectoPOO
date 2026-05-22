@@ -1,5 +1,7 @@
 package model;
 
+import battle.Tipo;
+
 public class AtaqueAgua implements Habilidad {
     private String nombre;
     private int poderBase;
