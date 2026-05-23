@@ -63,15 +63,67 @@ public class Pokedex {
         return null;
     }
 
+    // Método para buscar un Pokémon base dentro de la pokedex por nombre
+    public static Pokemon buscarPokemonBasePorNombre(String nombre) {
+        for (Pokemon pokemonBase : pokemonesBase) {
+            if (pokemonBase.getNombre().equalsIgnoreCase(nombre)) {
+                return pokemonBase;
+            }
+        }
+        return null;
+    }
+
     // Método para crear un nuevo objeto Pokémon usando como referencia un Pokémon base de la pokedex
     public static Pokemon crearPokemon(int id, int nivel) {
         Pokemon pokemonBase = buscarPokemonBasePorId(id);
 
         if (pokemonBase == null) {
-            return new PokemonBuilder().setId(0).setNombre("MissingNo").setTipo(TipoPokemon.NORMAL).setHp(10).setDano(10).setDefensa(10).setVelocidad(10).setNivel(1).setNivelEvolucion(0).setNombreEvolucion("Ninguna").setImagenFrontal("resources/front/missingno.png").setImagenTrasera("resources/back/missingno.png").agregarAtaquesIniciales("Golpe básico", 30).build();
+            Pokemon missingNo = new PokemonBuilder()
+                    .setId(0)
+                    .setNombre("MissingNo")
+                    .setTipo(TipoPokemon.NORMAL)
+                    .setHp(10)
+                    .setDano(10)
+                    .setDefensa(10)
+                    .setVelocidad(10)
+                    .setNivel(1)
+                    .setNivelEvolucion(0)
+                    .setNombreEvolucion("Ninguna")
+                    .setImagenFrontal("resources/front/missingno.png")
+                    .setImagenTrasera("resources/back/missingno.png")
+                    .agregarAtaquesIniciales("Golpe básico", 30)
+                    .build();
+
+            missingNo.setNivel(nivel);
+            missingNo.recalcularEstadisticasPorNivel();
+            return missingNo;
         }
 
-        return new PokemonBuilder().setId(pokemonBase.getId()).setNombre(pokemonBase.getNombre()).setTipo(pokemonBase.getTipo()).setHp(pokemonBase.getHpMax()).setDano(pokemonBase.getDano()).setDefensa(pokemonBase.getDefensa()).setVelocidad(pokemonBase.getVelocidad()).setNivel(nivel).setNivelEvolucion(pokemonBase.getNivelEvolucion()).setNombreEvolucion(pokemonBase.getNombreEvolucion()).setImagenFrontal(pokemonBase.getImagenFrontal()).setImagenTrasera(pokemonBase.getImagenTrasera()).setHabilidades(pokemonBase.getHabilidades()).build();
+        Pokemon nuevoPokemon = new PokemonBuilder()
+                .setId(pokemonBase.getId())
+                .setNombre(pokemonBase.getNombre())
+                .setTipo(pokemonBase.getTipo())
+                .setHp(pokemonBase.getHpBase())
+                .setDano(pokemonBase.getDanoBase())
+                .setDefensa(pokemonBase.getDefensaBase())
+                .setVelocidad(pokemonBase.getVelocidadBase())
+                .setNivel(1)
+                .setNivelEvolucion(pokemonBase.getNivelEvolucion())
+                .setNombreEvolucion(pokemonBase.getNombreEvolucion())
+                .setImagenFrontal(pokemonBase.getImagenFrontal())
+                .setImagenTrasera(pokemonBase.getImagenTrasera())
+                .setHabilidades(pokemonBase.getHabilidades())
+                .build();
+
+        nuevoPokemon.setNivel(nivel);
+        nuevoPokemon.recalcularEstadisticasPorNivel();
+
+        while (nuevoPokemon.puedeEvolucionar()) {
+            nuevoPokemon.evolucionar();
+        }
+
+        nuevoPokemon.recalcularEstadisticasPorNivel();
+        return nuevoPokemon;
     }
 
     // Método para obtener todos los Pokémon de la pokedex como nuevas copias

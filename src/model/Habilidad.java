@@ -1,6 +1,8 @@
 package src.model;
 
-public interface Habilidad {
+import java.io.Serializable;
+
+public interface Habilidad extends Serializable {
     String getNombre();
     TipoPokemon getTipo();
     int getPoderBase();

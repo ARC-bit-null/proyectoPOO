@@ -4,7 +4,6 @@ import src.model.Partida;
 
 import java.io.*;
 
-
 public class DataManager {
 
     // Método para guardar la información de la partida del jugador en un archivo
@@ -21,6 +20,7 @@ public class DataManager {
             System.out.println("Partida guardada con éxito en slot " + partida.getSlot());
         } catch (IOException e) {
             System.out.println("Error al guardar la partida: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -29,11 +29,24 @@ public class DataManager {
         String rutaArchivo = obtenerRutaArchivo(slot);
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(rutaArchivo))) {
-            return (Partida) ois.readObject();
+            Partida partida = (Partida) ois.readObject();
+
+            if (partida == null) {
+                System.out.println("La partida cargada es nula para el slot " + slot);
+            } else {
+                System.out.println("Partida cargada correctamente desde el slot " + slot);
+            }
+
+            return partida;
         } catch (FileNotFoundException e) {
             System.out.println("No existe una partida guardada en el slot " + slot);
+            e.printStackTrace();
+        } catch (InvalidClassException e) {
+            System.out.println("La partida guardada no es compatible con la versión actual de las clases.");
+            e.printStackTrace();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error al cargar la partida del slot " + slot + ": " + e.getMessage());
+            e.printStackTrace();
         }
 
         return null;
@@ -60,12 +73,10 @@ public class DataManager {
 
     // Método para obtener la ruta del archivo correspondiente a un slot de partida
     private static String obtenerRutaArchivo(int slot) {
-        // Nombre de la carpeta donde se guardarán las partidas
         String nombreCarpeta = "PartidasSaves";
 
         File carpeta = new File(nombreCarpeta);
 
-        // Si la carpeta no existe, el programa la crea automáticamente
         if (!carpeta.exists()) {
             carpeta.mkdir();
         }

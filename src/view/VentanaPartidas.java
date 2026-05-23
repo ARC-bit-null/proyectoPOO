@@ -10,6 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import src.controller.ControladorInfoPartida;
+import src.controller.ControladorGameplay;
 
 public class VentanaPartidas extends JFrame {
 
@@ -138,12 +140,26 @@ public class VentanaPartidas extends JFrame {
     private void abrirSlot(int slot) {
         setVisible(false);
 
-        if (DataManager.existePartida(slot)) {
-            // Si la partida existe, la cargamos desde el archivo y abrimos la ventana de gameplay
-            new VentanaGameplay(this, DataManager.cargarPartida(slot));
-        } else {
-            // Si la partida no existe, abrimos la ventana para crearla
-            new VentanaInfoPartida(this, slot);
+        try {
+            if (DataManager.existePartida(slot)) {
+                src.model.Partida partida = DataManager.cargarPartida(slot);
+
+                if (partida == null) {
+                    JOptionPane.showMessageDialog(this, "No se pudo cargar la partida del slot " + slot + ".");
+                    setVisible(true);
+                    return;
+                }
+
+                VentanaGameplay ventanaGameplay = new VentanaGameplay(this, partida);
+                new ControladorGameplay(ventanaGameplay, partida);
+            } else {
+                VentanaInfoPartida ventanaInfoPartida = new VentanaInfoPartida(this, slot);
+                new src.controller.ControladorInfoPartida(ventanaInfoPartida, this);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al abrir el slot.");
+            setVisible(true);
         }
     }
 }

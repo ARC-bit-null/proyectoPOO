@@ -25,6 +25,9 @@ public class BatallaPvp extends Batalla {
     // Lista de mensajes generados durante la ronda
     private ArrayList<String> mensajesRonda;
 
+    // Variable para no dar experiencia dos veces
+    private boolean experienciaOtorgada;
+
     public BatallaPvp(JugadorHumano jugadorHumano1, JugadorHumano jugadorHumano2) {
         super(jugadorHumano1, jugadorHumano2);
         this.inventarioJugador1 = new InventarioCombate();
@@ -34,6 +37,7 @@ public class BatallaPvp extends Batalla {
         this.cambioObligatorioJugador1 = false;
         this.cambioObligatorioJugador2 = false;
         this.mensajesRonda = new ArrayList<>();
+        this.experienciaOtorgada = false;
     }
 
     // Metodo para obtener los mensajes generados en la ronda actual
@@ -46,43 +50,54 @@ public class BatallaPvp extends Batalla {
         mensajesRonda.clear();
     }
 
-    // Metodo para agregar un mensaje al registro de la ronda
+    // Metodo para agregar mensajes a la ronda
     private void agregarMensaje(String mensaje) {
         mensajesRonda.add(mensaje);
     }
 
-    // Metodo para obtener el pokemon activo del Jugador 1
+    @Override
     public Pokemon getPokemonActivoJugador1() {
         return jugador1.getEquipo().getPokemones().get(indiceActivoJugador1);
     }
 
-    // Metodo para obtener el pokemon activo del Jugador 2
+    @Override
     public Pokemon getPokemonActivoJugador2() {
         return jugador2.getEquipo().getPokemones().get(indiceActivoJugador2);
     }
 
+    @Override
     public int getIndiceActivoJugador1() {
         return indiceActivoJugador1;
     }
 
+    @Override
     public int getIndiceActivoJugador2() {
         return indiceActivoJugador2;
     }
 
+    @Override
     public InventarioCombate getInventarioJugador1() {
         return inventarioJugador1;
     }
 
+    @Override
     public InventarioCombate getInventarioJugador2() {
         return inventarioJugador2;
     }
 
+    @Override
     public boolean isCambioObligatorioJugador1() {
         return cambioObligatorioJugador1;
     }
 
+    @Override
     public boolean isCambioObligatorioJugador2() {
         return cambioObligatorioJugador2;
+    }
+
+    @Override
+    public boolean esModoPve() {
+        return false;
     }
 
     @Override
@@ -106,15 +121,15 @@ public class BatallaPvp extends Batalla {
             if (batallaTerminada) return;
         }
 
-        // Si ambos eligieron atacar, resolvemos por velocidad
+        // Si ambos atacan resolvemos por velocidad
         if (accionJugador1 instanceof AccionAtacar && accionJugador2 instanceof AccionAtacar) {
             resolverAtaquesPorVelocidad();
         }
-        // Si solo el Jugador 1 atacó
+        // Si solo ataca J1
         else if (accionJugador1 instanceof AccionAtacar) {
             ejecutarAtaque((AccionAtacar) accionJugador1, true);
         }
-        // Si solo el Jugador 2 atacó
+        // Si solo ataca J2
         else if (accionJugador2 instanceof AccionAtacar) {
             ejecutarAtaque((AccionAtacar) accionJugador2, false);
         }
@@ -124,7 +139,7 @@ public class BatallaPvp extends Batalla {
         limpiarAcciones();
     }
 
-    // Metodo para resolver una acción prioritaria
+    // Metodo para resolver acciones prioritarias
     private void resolverAccionPrioritaria(AccionCombate accion, boolean esJugador1) {
         if (accion instanceof AccionCambiarPokemon) {
             ejecutarCambio((AccionCambiarPokemon) accion, esJugador1);
@@ -135,7 +150,7 @@ public class BatallaPvp extends Batalla {
         }
     }
 
-    // Metodo para ejecutar un cambio de pokemon
+    // Metodo para ejecutar cambio de pokemon
     private void ejecutarCambio(AccionCambiarPokemon accionCambio, boolean esJugador1) {
         int nuevoIndice = accionCambio.getIndicePokemonCambio();
 
@@ -154,7 +169,7 @@ public class BatallaPvp extends Batalla {
         }
     }
 
-    // Metodo para usar un objeto de combate
+    // Metodo para usar un objeto del inventario
     private void usarObjeto(AccionUsarObjeto accionObjeto, boolean esJugador1) {
         int indiceObjetivo = accionObjeto.getIndicePokemonObjetivo();
         TipoObjeto tipoObjeto = accionObjeto.getTipoObjeto();
@@ -186,26 +201,25 @@ public class BatallaPvp extends Batalla {
 
         if (tipoObjeto == TipoObjeto.BANDA_ESPECIAL) {
             if (inventario.usarBandaEspecial()) {
-                pokemonObjetivo.aumentarDano(10);
-                agregarMensaje((esJugador1 ? "Jugador 1" : "Jugador 2") + " usó Banda especial en " + pokemonObjetivo.getNombre() + ". Su daño aumentó.");
+                pokemonObjetivo.aplicarMultiplicadorDano(1.5);
+                agregarMensaje((esJugador1 ? "Jugador 1" : "Jugador 2") + " usó Banda especial en " + pokemonObjetivo.getNombre() + ". Su daño aumentó x1.5 durante el combate.");
             }
         }
 
         if (tipoObjeto == TipoObjeto.X_SPEED) {
             if (inventario.usarXSpeed()) {
-                pokemonObjetivo.aumentarVelocidad(10);
-                agregarMensaje((esJugador1 ? "Jugador 1" : "Jugador 2") + " usó X Speed en " + pokemonObjetivo.getNombre() + ". Su velocidad aumentó.");
+                pokemonObjetivo.aplicarMultiplicadorVelocidad(1.5);
+                agregarMensaje((esJugador1 ? "Jugador 1" : "Jugador 2") + " usó X Speed en " + pokemonObjetivo.getNombre() + ". Su velocidad aumentó x1.5 durante el combate.");
             }
         }
     }
 
-    // Metodo para resolver los ataques cuando ambos jugadores atacan
+    // Metodo para decidir quien ataca primero segun velocidad efectiva
     private void resolverAtaquesPorVelocidad() {
         Pokemon pokemonJ1 = getPokemonActivoJugador1();
         Pokemon pokemonJ2 = getPokemonActivoJugador2();
 
-        // Si el pokemon del Jugador 1 es más rápido o empatan, ataca primero
-        if (pokemonJ1.getVelocidad() >= pokemonJ2.getVelocidad()) {
+        if (pokemonJ1.getVelocidadEfectiva() >= pokemonJ2.getVelocidadEfectiva()) {
             ejecutarAtaque((AccionAtacar) accionJugador1, true);
 
             if (!getPokemonActivoJugador2().estaDerrotado()) {
@@ -220,7 +234,7 @@ public class BatallaPvp extends Batalla {
         }
     }
 
-    // Metodo para ejecutar un ataque usando una habilidad concreta
+    // Metodo para ejecutar un ataque con la habilidad elegida
     private void ejecutarAtaque(AccionAtacar accionAtaque, boolean esJugador1) {
         Pokemon atacante = esJugador1 ? getPokemonActivoJugador1() : getPokemonActivoJugador2();
         Pokemon defensor = esJugador1 ? getPokemonActivoJugador2() : getPokemonActivoJugador1();
@@ -231,12 +245,17 @@ public class BatallaPvp extends Batalla {
             return;
         }
 
+        if (habilidad == null) {
+            agregarMensaje((esJugador1 ? "Jugador 1" : "Jugador 2") + " no pudo atacar porque no tiene una habilidad válida.");
+            return;
+        }
+
         int danio = CalculadoraDanio.calcular(atacante, defensor, habilidad);
         defensor.recibirDano(danio);
 
         agregarMensaje(atacante.getNombre() + " usó " + habilidad.getNombre() + " contra " + defensor.getNombre() + " e hizo " + danio + " de daño.");
 
-        // Aplicamos el efecto especial de la habilidad después del daño
+        // Luego aplicamos el efecto especial de la habilidad
         habilidad.aplicarEfectoEspecial(atacante, defensor);
 
         if (defensor.estaDerrotado()) {
@@ -244,7 +263,7 @@ public class BatallaPvp extends Batalla {
         }
     }
 
-    // Metodo para revisar si alguno de los pokemones activos fue derrotado
+    // Metodo para ver si algun pokemon activo cayó derrotado
     private void revisarPokemonDerrotados() {
         if (getPokemonActivoJugador1().estaDerrotado()) {
             cambioObligatorioJugador1 = true;
@@ -255,6 +274,20 @@ public class BatallaPvp extends Batalla {
         }
     }
 
+    // Metodo para dar xp al equipo ganador
+    private void otorgarExperienciaEquipoGanador() {
+        if (experienciaOtorgada || ganador == null) {
+            return;
+        }
+
+        for (Pokemon pokemon : ganador.getEquipo().getPokemones()) {
+            pokemon.ganarExperiencia(50);
+            agregarMensaje(pokemon.getNombre() + " ganó 50 puntos de experiencia.");
+        }
+
+        experienciaOtorgada = true;
+    }
+
     @Override
     public void verificarFinBatalla() {
         if (todosLosPokemonesDerrotados(jugador1.getEquipo().getPokemones())) {
@@ -262,6 +295,7 @@ public class BatallaPvp extends Batalla {
             ganador = jugador2;
             agregarMensaje("Todos los Pokémon del Jugador 1 fueron derrotados.");
             agregarMensaje("¡Jugador 2 gana el combate!");
+            otorgarExperienciaEquipoGanador();
             return;
         }
 
@@ -270,10 +304,11 @@ public class BatallaPvp extends Batalla {
             ganador = jugador1;
             agregarMensaje("Todos los Pokémon del Jugador 2 fueron derrotados.");
             agregarMensaje("¡Jugador 1 gana el combate!");
+            otorgarExperienciaEquipoGanador();
         }
     }
 
-    // Metodo para saber si todos los pokemones de un equipo están derrotados
+    // Metodo para revisar si todo el equipo ya cayó
     private boolean todosLosPokemonesDerrotados(ArrayList<Pokemon> equipo) {
         for (Pokemon pokemon : equipo) {
             if (!pokemon.estaDerrotado()) {
@@ -283,7 +318,7 @@ public class BatallaPvp extends Batalla {
         return true;
     }
 
-    // Metodo para forzar manualmente el cambio del Jugador 1 después de quedar derrotado
+    @Override
     public void forzarCambioJugador1(int nuevoIndice) {
         if (!batallaTerminada && cambioObligatorioJugador1) {
             indiceActivoJugador1 = nuevoIndice;
@@ -292,7 +327,7 @@ public class BatallaPvp extends Batalla {
         }
     }
 
-    // Metodo para forzar manualmente el cambio del Jugador 2 después de quedar derrotado
+    @Override
     public void forzarCambioJugador2(int nuevoIndice) {
         if (!batallaTerminada && cambioObligatorioJugador2) {
             indiceActivoJugador2 = nuevoIndice;

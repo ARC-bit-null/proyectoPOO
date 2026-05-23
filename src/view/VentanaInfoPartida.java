@@ -1,10 +1,8 @@
 package src.view;
 
-import src.persistance.DataManager;
 import src.model.Partida;
 import src.model.Pokedex;
 import src.model.Pokemon;
-import src.model.JugadorHumano;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,7 +15,6 @@ import java.awt.event.WindowEvent;
 
 public class VentanaInfoPartida extends JFrame {
 
-    // Declaramos los elementos de la ventana
     private JTextField txtNombreJugador;
     private JButton btnCrear;
 
@@ -26,12 +23,11 @@ public class VentanaInfoPartida extends JFrame {
     private JPanel panelSquirtle;
 
     private int idPokemonSeleccionado = -1;
-
-    // Variable para guardar el slot en el que se creará la partida
     private int slot;
 
+    private boolean abriendoGameplay = false;
+
     public VentanaInfoPartida(VentanaPartidas ventanaPartidas, int slot) {
-        // Guardamos el slot recibido para poder usarlo al crear la partida
         this.slot = slot;
 
         setTitle("Crear Partida");
@@ -43,48 +39,43 @@ public class VentanaInfoPartida extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                ventanaPartidas.setVisible(true);
+                if (!abriendoGameplay) {
+                    ventanaPartidas.setVisible(true);
+                }
             }
         });
 
         inicializarComponentes(slot);
-        inicializarEventos(ventanaPartidas);
+        inicializarEventos();
 
         setVisible(true);
     }
 
-    // Inicializamos los elementos de la ventana
     private void inicializarComponentes(int slot) {
-        // Declaramos las dimensiones del panel principal
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(new Color(245, 245, 245));
         panelPrincipal.setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        // Título principal de la ventana
         JLabel lblTitulo = new JLabel("Crear Partida - Slot " + slot, SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 32));
         lblTitulo.setBorder(new EmptyBorder(10, 0, 30, 0));
 
-        // Panel principal donde pondremos los paneles de los principales y el textbox del nombre del jugador
         JPanel panelContenido = new JPanel();
         panelContenido.setLayout(new BorderLayout(0, 30));
         panelContenido.setBackground(new Color(245, 245, 245));
 
-        // Determinamos las dimensiones del label NombreJugador
         JPanel panelNombre = new JPanel(new BorderLayout(10, 10));
         panelNombre.setBackground(new Color(245, 245, 245));
 
         JLabel lblNombreJugador = new JLabel("Nombre del jugador:");
         lblNombreJugador.setFont(new Font("Arial", Font.PLAIN, 20));
 
-        // Creamos el textbox donde escribiremos el nombre del jugador
         txtNombreJugador = new JTextField();
         txtNombreJugador.setFont(new Font("Arial", Font.PLAIN, 20));
 
         panelNombre.add(lblNombreJugador, BorderLayout.NORTH);
         panelNombre.add(txtNombreJugador, BorderLayout.CENTER);
 
-        // Panel donde pondremos los recuadros de los pokemosnes
         JPanel panelIniciales = new JPanel(new GridLayout(1, 3, 20, 20));
         panelIniciales.setBackground(new Color(245, 245, 245));
 
@@ -96,7 +87,6 @@ public class VentanaInfoPartida extends JFrame {
         panelIniciales.add(panelCharmander);
         panelIniciales.add(panelSquirtle);
 
-        // Declaramos y creamos el boton Crear
         btnCrear = new JButton("Crear Partida");
         btnCrear.setFont(new Font("Arial", Font.BOLD, 20));
         btnCrear.setFocusPainted(false);
@@ -106,7 +96,6 @@ public class VentanaInfoPartida extends JFrame {
         panelBoton.setBackground(new Color(245, 245, 245));
         panelBoton.add(btnCrear);
 
-        // Inicializamos los elementos de la ventana
         panelContenido.add(panelNombre, BorderLayout.NORTH);
         panelContenido.add(panelIniciales, BorderLayout.CENTER);
         panelContenido.add(panelBoton, BorderLayout.SOUTH);
@@ -117,9 +106,7 @@ public class VentanaInfoPartida extends JFrame {
         add(panelPrincipal);
     }
 
-    // Metodo donde inicializaremos y crearemos los paneles de los iniciales
     private JPanel crearTarjetaPokemon(Pokemon pokemon) {
-        // Delimitamos sus dimensions, color y forma de las tarjetas
         JPanel tarjeta = new JPanel();
         tarjeta.setBackground(Color.WHITE);
         tarjeta.setBorder(new LineBorder(new Color(220, 190, 190), 2, true));
@@ -127,7 +114,6 @@ public class VentanaInfoPartida extends JFrame {
         tarjeta.setCursor(new Cursor(Cursor.HAND_CURSOR));
         tarjeta.setPreferredSize(new Dimension(200, 280));
 
-        // Creamos el lbl superior donde nos mostrara el id del pokemon
         JLabel lblId = new JLabel("#" + pokemon.getId());
         lblId.setFont(new Font("Arial", Font.BOLD, 16));
         lblId.setForeground(Color.WHITE);
@@ -139,11 +125,10 @@ public class VentanaInfoPartida extends JFrame {
         panelSuperior.setOpaque(false);
         panelSuperior.add(lblId);
 
-        // lbl donde mostraremos una futura imagen del pokemon
         JLabel lblImagen = new JLabel();
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
 
-        ImageIcon icono = cargarImagenPokemon(pokemon.getNombre());
+        ImageIcon icono = cargarImagenPokemon(pokemon.getImagenFrontal());
         if (icono != null && icono.getIconWidth() > 0) {
             Image imagenEscalada = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             lblImagen.setIcon(new ImageIcon(imagenEscalada));
@@ -152,7 +137,6 @@ public class VentanaInfoPartida extends JFrame {
             lblImagen.setFont(new Font("Arial", Font.PLAIN, 14));
         }
 
-        // lbls donde mostraremos la información del pokemones como el nombre y tipo
         JLabel lblNombre = new JLabel(pokemon.getNombre(), SwingConstants.CENTER);
         lblNombre.setFont(new Font("Arial", Font.BOLD, 24));
         lblNombre.setForeground(new Color(50, 50, 50));
@@ -166,7 +150,6 @@ public class VentanaInfoPartida extends JFrame {
         panelCentro.setLayout(new BoxLayout(panelCentro, BoxLayout.Y_AXIS));
         panelCentro.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // inicializamos los elementos de los paneles
         lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblTipo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -181,14 +164,12 @@ public class VentanaInfoPartida extends JFrame {
         tarjeta.add(panelSuperior, BorderLayout.NORTH);
         tarjeta.add(panelCentro, BorderLayout.CENTER);
 
-        // Guardamos el objeto Pokemon en la tarjeta para poder recuperarlo cuando se haga clic
         tarjeta.putClientProperty("pokemon", pokemon);
 
         return tarjeta;
     }
 
-    // Metodo que nos permite dar clic sobre las tarjetas
-    private void inicializarEventos(VentanaPartidas ventanaPartidas) {
+    private void inicializarEventos() {
         panelBulbasaur.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -209,12 +190,8 @@ public class VentanaInfoPartida extends JFrame {
                 seleccionarPokemon(panelSquirtle);
             }
         });
-
-        // Evento del botón para crear la partida, guardarla y abrir la ventana de gameplay
-        btnCrear.addActionListener(e -> crearPartida(ventanaPartidas));
     }
 
-    // Metodo para guardar el pokemon seleccionado y remarcar visualmente la tarjeta elegida
     private void seleccionarPokemon(JPanel panelSeleccionado) {
         restaurarBordes();
 
@@ -226,56 +203,47 @@ public class VentanaInfoPartida extends JFrame {
         btnCrear.setEnabled(true);
     }
 
-    // Metodo para rastaurar los bordes si es que cambiamos de pokemon seleccionado
-    private void restaurarBordes() {
+    public void restaurarBordes() {
         panelBulbasaur.setBorder(new LineBorder(new Color(220, 190, 190), 2, true));
         panelCharmander.setBorder(new LineBorder(new Color(220, 190, 190), 2, true));
         panelSquirtle.setBorder(new LineBorder(new Color(220, 190, 190), 2, true));
     }
 
-    // Metodo para cargar una futura imagen de los pokemones
-    private ImageIcon cargarImagenPokemon(String nombrePokemon) {
-        String ruta = "assets/" + nombrePokemon.toLowerCase() + ".png";
-        ImageIcon icono = new ImageIcon(ruta);
+    private ImageIcon cargarImagenPokemon(String rutaImagen) {
+        if (rutaImagen == null || rutaImagen.isEmpty()) {
+            return null;
+        }
 
-        if (icono.getIconWidth() == -1) {
+        ImageIcon icono = new ImageIcon(rutaImagen);
+
+        if (icono.getIconWidth() <= 0) {
             return null;
         }
 
         return icono;
     }
 
-    // Metodo para crear el objeto partida, guardarlo en archivo y abrir la ventana de gameplay
-    private void crearPartida(VentanaPartidas ventanaPartidas) {
-        // Obtenemos el nombre del jugador escrito en el textbox
-        String nombreJugador = txtNombreJugador.getText().trim();
+    public void mostrarDialogo(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
+    }
 
-        // Validamos que el nombre del jugador no esté vacío
-        if (nombreJugador.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debes ingresar el nombre del jugador.");
-            return;
-        }
+    public JTextField getTxtNombreJugador() {
+        return txtNombreJugador;
+    }
 
-        // Validamos que exista un pokemon inicial seleccionado
-        if (idPokemonSeleccionado == -1) {
-            JOptionPane.showMessageDialog(this, "Debes seleccionar un Pokémon inicial.");
-            return;
-        }
+    public JButton getBtnCrear() {
+        return btnCrear;
+    }
 
-        // Creamos el pokemon inicial usando el id seleccionado y los datos base de la pokedex
-        Pokemon pokemonInicial = Pokedex.crearPokemon(idPokemonSeleccionado, 5);
+    public int getIdPokemonSeleccionado() {
+        return idPokemonSeleccionado;
+    }
 
-        // Creamos el jugador con el nombre del jugador y su pokemon inicial
-        JugadorHumano jugadorHumano = new JugadorHumano(nombreJugador, pokemonInicial);
+    public int getSlot() {
+        return slot;
+    }
 
-        // Creamos el objeto partida con el slot actual y el jugador creado
-        Partida partida = new Partida(slot, jugadorHumano);
-
-        // Guardamos la partida en su archivo correspondiente
-        DataManager.guardarPartida(partida);
-
-        // Cerramos esta ventana y abrimos la ventana de gameplay con la partida creada
-        dispose();
-        new VentanaGameplay(ventanaPartidas, partida);
+    public void setAbriendoGameplay(boolean abriendoGameplay) {
+        this.abriendoGameplay = abriendoGameplay;
     }
 }

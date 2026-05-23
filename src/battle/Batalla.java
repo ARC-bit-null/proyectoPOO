@@ -1,6 +1,10 @@
 package src.battle;
 
+import src.model.InventarioCombate;
 import src.model.Jugador;
+import src.model.Pokemon;
+
+import java.util.ArrayList;
 
 // Esta clase abstracta representa la base de cualquier combate del juego
 public abstract class Batalla {
@@ -24,7 +28,6 @@ public abstract class Batalla {
         this.ganador = null;
     }
 
-    // Metodo para obtener al Jugador 1
     public Jugador getJugador1() {
         return jugador1;
     }
@@ -33,7 +36,6 @@ public abstract class Batalla {
         this.jugador1 = jugador1;
     }
 
-    // Metodo para obtener al Jugador 2
     public Jugador getJugador2() {
         return jugador2;
     }
@@ -42,7 +44,6 @@ public abstract class Batalla {
         this.jugador2 = jugador2;
     }
 
-    // Metodo para obtener la acción elegida por el Jugador 1
     public AccionCombate getAccionJugador1() {
         return accionJugador1;
     }
@@ -51,7 +52,6 @@ public abstract class Batalla {
         this.accionJugador1 = accionJugador1;
     }
 
-    // Metodo para obtener la acción elegida por el Jugador 2
     public AccionCombate getAccionJugador2() {
         return accionJugador2;
     }
@@ -60,7 +60,6 @@ public abstract class Batalla {
         this.accionJugador2 = accionJugador2;
     }
 
-    // Metodo para saber si la batalla ya terminó
     public boolean isBatallaTerminada() {
         return batallaTerminada;
     }
@@ -69,7 +68,6 @@ public abstract class Batalla {
         this.batallaTerminada = batallaTerminada;
     }
 
-    // Metodo para obtener el ganador de la batalla
     public Jugador getGanador() {
         return ganador;
     }
@@ -78,30 +76,50 @@ public abstract class Batalla {
         this.ganador = ganador;
     }
 
-    // Metodo para registrar la acción del Jugador 1
     public void registrarAccionJugador1(AccionCombate accion) {
         this.accionJugador1 = accion;
     }
 
-    // Metodo para registrar la acción del Jugador 2
     public void registrarAccionJugador2(AccionCombate accion) {
         this.accionJugador2 = accion;
     }
 
-    // Metodo para saber si ambos jugadores ya eligieron una acción
     public boolean accionesListas() {
         return accionJugador1 != null && accionJugador2 != null;
     }
 
-    // Metodo para limpiar las acciones actuales y preparar la siguiente ronda
     public void limpiarAcciones() {
         accionJugador1 = null;
         accionJugador2 = null;
     }
 
-    // Metodo abstracto para resolver una ronda del combate
+    public abstract Pokemon getPokemonActivoJugador1();
+
+    public abstract Pokemon getPokemonActivoJugador2();
+
+    public abstract int getIndiceActivoJugador1();
+
+    public abstract int getIndiceActivoJugador2();
+
+    public abstract InventarioCombate getInventarioJugador1();
+
+    public abstract InventarioCombate getInventarioJugador2();
+
+    public abstract boolean isCambioObligatorioJugador1();
+
+    public abstract boolean isCambioObligatorioJugador2();
+
+    public abstract void forzarCambioJugador1(int nuevoIndice);
+
+    public abstract void forzarCambioJugador2(int nuevoIndice);
+
+    public abstract ArrayList<String> getMensajesRonda();
+
+    public abstract void limpiarMensajesRonda();
+
+    public abstract boolean esModoPve();
+
     public abstract void resolverRonda();
 
-    // Metodo abstracto para verificar si la batalla terminó
     public abstract void verificarFinBatalla();
 }

@@ -1,6 +1,8 @@
 package src.model;
 
 public class AtaqueBasico implements Habilidad {
+    private static final long serialVersionUID = 1L;
+    
     private String nombre;
     private TipoPokemon tipo;
     private int poderBase;

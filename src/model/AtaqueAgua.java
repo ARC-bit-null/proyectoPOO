@@ -1,6 +1,8 @@
 package src.model;
 
 public class AtaqueAgua implements Habilidad {
+    private static final long serialVersionUID = 1L;
+
     private String nombre;
     private int poderBase;
 
