@@ -2,6 +2,8 @@ package src.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Pokemon implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -37,6 +39,8 @@ public class Pokemon implements Serializable {
     // Multiplicadores temporales para el combate
     private double multiplicadorDanoTemporal;
     private double multiplicadorVelocidadTemporal;
+
+    private Set<String> efectosEspecialesUsados = new HashSet<>();
 
     // Constructor original para mantener compatibilidad
     public Pokemon(int id, String nombre, TipoPokemon tipo, int hp, int dano, int defensa, int velocidad, int nivel, int nivelEvolucion, String nombreEvolucion) {
@@ -95,6 +99,18 @@ public class Pokemon implements Serializable {
 
         this.multiplicadorDanoTemporal = 1.0;
         this.multiplicadorVelocidadTemporal = 1.0;
+    }
+
+    public boolean yaUsoEfectoEspecial(String nombreHabilidad) {
+        return efectosEspecialesUsados.contains(nombreHabilidad);
+    }
+
+    public void marcarEfectoEspecialComoUsado(String nombreHabilidad) {
+        efectosEspecialesUsados.add(nombreHabilidad);
+    }
+
+    public void reiniciarEfectosEspecialesUsados() {
+        efectosEspecialesUsados.clear();
     }
 
     // Metodo para restar daño recibido

@@ -28,9 +28,15 @@ public class AtaqueAgua implements Habilidad {
 
     @Override
     public void aplicarEfectoEspecial(Pokemon atacante, Pokemon defensor) {
+        if (atacante.yaUsoEfectoEspecial(nombre)) {
+            return;
+        }
+
         // Bajamos el daño base del rival un 20%
         int nuevoDano = (int) (defensor.getDano() * 0.80);
         defensor.setDano(Math.max(1, nuevoDano));
+
+        atacante.marcarEfectoEspecialComoUsado(nombre);
 
         System.out.println("¡La presión del agua redujo la fuerza de ataque de " + defensor.getNombre() + "!");
     }

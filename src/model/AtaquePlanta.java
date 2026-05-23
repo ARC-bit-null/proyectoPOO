@@ -28,8 +28,14 @@ public class AtaquePlanta implements Habilidad {
 
     @Override
     public void aplicarEfectoEspecial(Pokemon atacante, Pokemon defensor) {
+        if (atacante.yaUsoEfectoEspecial(nombre)) {
+            return;
+        }
+
         // El atacante drena energía y se cura 15 HP
         atacante.curarHp(15);
         System.out.println("¡" + atacante.getNombre() + " absorbió energía de las plantas y recuperó salud!");
+
+        atacante.marcarEfectoEspecialComoUsado(nombre);
     }
 }

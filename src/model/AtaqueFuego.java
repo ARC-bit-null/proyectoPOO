@@ -28,10 +28,16 @@ public class AtaqueFuego implements Habilidad {
 
     @Override
     public void aplicarEfectoEspecial(Pokemon atacante, Pokemon defensor) {
+        if (atacante.yaUsoEfectoEspecial(nombre)) {
+            return;
+        }
+
         // Reducimos la defensa del rival un 15% debido al calor extremo
         int nuevaDefensa = (int) (defensor.getDefensa() * 0.85);
         defensor.setDefensa(Math.max(1, nuevaDefensa));
 
         System.out.println("¡El calor abrasador redujo la defensa de " + defensor.getNombre() + "!");
+
+        atacante.marcarEfectoEspecialComoUsado(nombre);
     }
 }
