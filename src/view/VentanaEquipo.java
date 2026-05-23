@@ -1,6 +1,5 @@
 package src.view;
 
-import src.persistance.DataManager;
 import src.model.Partida;
 import src.model.Pokemon;
 
@@ -8,10 +7,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class VentanaEquipo extends JFrame {
@@ -35,12 +30,7 @@ public class VentanaEquipo extends JFrame {
     private JButton btnAgregar;
     private JButton btnQuitar;
 
-    // Variables para guardar el pokemon seleccionado en la lista y en el equipo
-    private Pokemon pokemonSeleccionadoLista;
-    private Pokemon pokemonSeleccionadoEquipo;
-
     public VentanaEquipo(VentanaGameplay ventanaGameplay, Partida partida) {
-        // Guardamos la ventana anterior y la partida actual
         this.ventanaGameplay = ventanaGameplay;
         this.partida = partida;
 
@@ -50,36 +40,24 @@ public class VentanaEquipo extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                ventanaGameplay.setVisible(true);
-            }
-        });
-
         inicializarComponentes();
-        inicializarEventos();
 
         setVisible(true);
     }
 
     // Metodo donde inicializamos todos los elementos visuales de la ventana
     private void inicializarComponentes() {
-        // Panel principal de la ventana
         JPanel panelPrincipal = new JPanel(new BorderLayout(20, 20));
         panelPrincipal.setBackground(new Color(245, 245, 245));
         panelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Título de la ventana
         JLabel lblTitulo = new JLabel("Administrar Equipo", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 32));
         lblTitulo.setForeground(new Color(50, 50, 50));
 
-        // Panel central que contendrá la sección del equipo y la lista de pokemones
         JPanel panelCentro = new JPanel(new GridLayout(1, 2, 20, 0));
         panelCentro.setBackground(new Color(245, 245, 245));
 
-        // Panel izquierdo para mostrar los 6 espacios del equipo
         JPanel panelEquipo = new JPanel(new GridLayout(6, 1, 10, 10));
         panelEquipo.setBackground(Color.WHITE);
         panelEquipo.setBorder(new EmptyBorder(15, 15, 15, 15));
@@ -91,7 +69,6 @@ public class VentanaEquipo extends JFrame {
             panelEquipo.add(panelesEquipo[i]);
         }
 
-        // Panel derecho para mostrar los pokemones capturados del jugador
         panelListaPokemones = new JPanel();
         panelListaPokemones.setLayout(new BoxLayout(panelListaPokemones, BoxLayout.Y_AXIS));
         panelListaPokemones.setBackground(Color.WHITE);
@@ -104,7 +81,6 @@ public class VentanaEquipo extends JFrame {
         panelCentro.add(panelEquipo);
         panelCentro.add(scrollLista);
 
-        // Panel inferior con información y botones de acción
         JPanel panelInferior = new JPanel(new BorderLayout(20, 20));
         panelInferior.setBackground(new Color(245, 245, 245));
 
@@ -129,14 +105,12 @@ public class VentanaEquipo extends JFrame {
         panelInferior.add(lblPokemonSeleccionado, BorderLayout.WEST);
         panelInferior.add(panelBotones, BorderLayout.EAST);
 
-        // Agregamos los elementos al panel principal
         panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
         panelPrincipal.add(panelCentro, BorderLayout.CENTER);
         panelPrincipal.add(panelInferior, BorderLayout.SOUTH);
 
         add(panelPrincipal);
 
-        // Cargamos la información visual del equipo y de los pokemones del jugador
         actualizarVistaEquipo();
         actualizarListaPokemones();
     }
@@ -149,14 +123,13 @@ public class VentanaEquipo extends JFrame {
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panel.setPreferredSize(new Dimension(400, 85));
 
-        // Guardamos el índice del panel para identificar su posición visual
         panel.putClientProperty("indice", indice);
 
         return panel;
     }
 
     // Metodo para actualizar visualmente los 6 espacios del equipo
-    private void actualizarVistaEquipo() {
+    public void actualizarVistaEquipo() {
         ArrayList<Pokemon> equipoActual = partida.getJugador().getEquipo().getPokemones();
 
         for (int i = 0; i < 6; i++) {
@@ -165,8 +138,6 @@ public class VentanaEquipo extends JFrame {
 
             if (i < equipoActual.size()) {
                 Pokemon pokemon = equipoActual.get(i);
-
-                // Guardamos el pokemon mostrado en el panel
                 panel.putClientProperty("pokemon", pokemon);
 
                 JLabel lblNombre = new JLabel(pokemon.getNombre() + "  |  Nv." + pokemon.getNivel());
@@ -181,7 +152,6 @@ public class VentanaEquipo extends JFrame {
                 panel.add(lblNombre, BorderLayout.NORTH);
                 panel.add(lblDatos, BorderLayout.CENTER);
             } else {
-                // Si no hay pokemon en esa posición, mostramos el texto Vacío
                 panel.putClientProperty("pokemon", null);
 
                 JLabel lblVacio = new JLabel("Vacío", SwingConstants.CENTER);
@@ -194,12 +164,10 @@ public class VentanaEquipo extends JFrame {
             panel.revalidate();
             panel.repaint();
         }
-
-        restaurarSeleccionEquipo();
     }
 
     // Metodo para actualizar la lista de pokemones capturados por el jugador
-    private void actualizarListaPokemones() {
+    public void actualizarListaPokemones() {
         panelListaPokemones.removeAll();
 
         ArrayList<Pokemon> pokemonesCapturados = partida.getJugador().getPokemonesCapturados();
@@ -220,8 +188,6 @@ public class VentanaEquipo extends JFrame {
 
         panelListaPokemones.revalidate();
         panelListaPokemones.repaint();
-
-        restaurarSeleccionLista();
     }
 
     // Metodo para crear la tarjeta visual de cada pokemon disponible
@@ -244,117 +210,12 @@ public class VentanaEquipo extends JFrame {
         tarjeta.add(lblNombre, BorderLayout.NORTH);
         tarjeta.add(lblDatos, BorderLayout.CENTER);
 
-        // Guardamos el pokemon en la tarjeta para poder seleccionarlo al hacer clic
         tarjeta.putClientProperty("pokemon", pokemon);
-
-        tarjeta.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                seleccionarPokemonLista(tarjeta);
-            }
-        });
 
         return tarjeta;
     }
 
-    // Metodo donde inicializamos los eventos principales de la ventana
-    private void inicializarEventos() {
-        for (JPanel panelEquipo : panelesEquipo) {
-            panelEquipo.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    seleccionarPokemonEquipo(panelEquipo);
-                }
-            });
-        }
-
-        btnAgregar.addActionListener(e -> agregarPokemonAlEquipo());
-        btnQuitar.addActionListener(e -> quitarPokemonDelEquipo());
-    }
-
-    // Metodo para seleccionar un pokemon de la lista de pokemones disponibles
-    private void seleccionarPokemonLista(JPanel tarjetaSeleccionada) {
-        restaurarSeleccionLista();
-
-        tarjetaSeleccionada.setBorder(new LineBorder(new Color(80, 160, 90), 3, true));
-
-        pokemonSeleccionadoLista = (Pokemon) tarjetaSeleccionada.getClientProperty("pokemon");
-        pokemonSeleccionadoEquipo = null;
-
-        lblPokemonSeleccionado.setText("Pokémon seleccionado: " + pokemonSeleccionadoLista.getNombre() + " (lista)");
-        restaurarSeleccionEquipo();
-    }
-
-    // Metodo para seleccionar un pokemon que ya está dentro del equipo
-    private void seleccionarPokemonEquipo(JPanel panelSeleccionado) {
-        restaurarSeleccionEquipo();
-
-        panelSeleccionado.setBorder(new LineBorder(new Color(220, 120, 120), 3, true));
-
-        pokemonSeleccionadoEquipo = (Pokemon) panelSeleccionado.getClientProperty("pokemon");
-        pokemonSeleccionadoLista = null;
-
-        if (pokemonSeleccionadoEquipo != null) {
-            lblPokemonSeleccionado.setText("Pokémon seleccionado: " + pokemonSeleccionadoEquipo.getNombre() + " (equipo)");
-        } else {
-            lblPokemonSeleccionado.setText("Pokémon seleccionado: Espacio vacío");
-        }
-
-        restaurarSeleccionLista();
-    }
-
-    // Metodo para agregar un pokemon seleccionado de la lista al equipo
-    private void agregarPokemonAlEquipo() {
-        if (pokemonSeleccionadoLista == null) {
-            JOptionPane.showMessageDialog(this, "Debes seleccionar un Pokémon de la lista.");
-            return;
-        }
-
-        ArrayList<Pokemon> equipoActual = partida.getJugador().getEquipo().getPokemones();
-
-        if (equipoActual.contains(pokemonSeleccionadoLista)) {
-            JOptionPane.showMessageDialog(this, "Ese Pokémon ya está dentro del equipo.");
-            return;
-        }
-
-        if (partida.getJugador().getEquipo().estaLleno()) {
-            JOptionPane.showMessageDialog(this, "El equipo ya tiene 6 Pokémon.");
-            return;
-        }
-
-        partida.getJugador().getEquipo().agregarPokemon(pokemonSeleccionadoLista);
-
-        // Guardamos los cambios en la partida
-        DataManager.guardarPartida(partida);
-
-        // Actualizamos la interfaz
-        actualizarVistaEquipo();
-        lblPokemonSeleccionado.setText("Pokémon agregado al equipo: " + pokemonSeleccionadoLista.getNombre());
-
-        pokemonSeleccionadoLista = null;
-    }
-
-    // Metodo para quitar un pokemon seleccionado del equipo
-    private void quitarPokemonDelEquipo() {
-        if (pokemonSeleccionadoEquipo == null) {
-            JOptionPane.showMessageDialog(this, "Debes seleccionar un Pokémon del equipo.");
-            return;
-        }
-
-        partida.getJugador().getEquipo().eliminarPokemon(pokemonSeleccionadoEquipo);
-
-        // Guardamos los cambios en la partida
-        DataManager.guardarPartida(partida);
-
-        // Actualizamos la interfaz
-        actualizarVistaEquipo();
-        lblPokemonSeleccionado.setText("Pokémon eliminado del equipo: " + pokemonSeleccionadoEquipo.getNombre());
-
-        pokemonSeleccionadoEquipo = null;
-    }
-
-    // Metodo para restaurar el estilo visual de la lista de pokemones disponibles
-    private void restaurarSeleccionLista() {
+    public void restaurarSeleccionLista() {
         Component[] componentes = panelListaPokemones.getComponents();
 
         for (Component componente : componentes) {
@@ -365,11 +226,42 @@ public class VentanaEquipo extends JFrame {
         }
     }
 
-    // Metodo para restaurar el estilo visual de los paneles del equipo
-    private void restaurarSeleccionEquipo() {
+    public void restaurarSeleccionEquipo() {
         for (JPanel panel : panelesEquipo) {
             panel.setBackground(new Color(252, 252, 252));
             panel.setBorder(new LineBorder(new Color(200, 200, 200), 2, true));
         }
+    }
+
+    public void setTextoPokemonSeleccionado(String texto) {
+        lblPokemonSeleccionado.setText(texto);
+    }
+
+    public void mostrarDialogo(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    public VentanaGameplay getVentanaGameplay() {
+        return ventanaGameplay;
+    }
+
+    public JPanel[] getPanelesEquipo() {
+        return panelesEquipo;
+    }
+
+    public JPanel getPanelListaPokemones() {
+        return panelListaPokemones;
+    }
+
+    public JButton getBtnAgregar() {
+        return btnAgregar;
+    }
+
+    public JButton getBtnQuitar() {
+        return btnQuitar;
     }
 }

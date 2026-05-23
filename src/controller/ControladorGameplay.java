@@ -43,7 +43,8 @@ public class ControladorGameplay {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ventana.setVisible(false);
-                new VentanaEquipo(ventana, partida);
+                VentanaEquipo ventanaEquipo = new VentanaEquipo(ventana, partida);
+                new ControladorEquipo(ventanaEquipo);
             }
         });
     }

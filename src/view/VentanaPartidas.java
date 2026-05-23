@@ -6,12 +6,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import src.controller.ControladorInfoPartida;
-import src.controller.ControladorGameplay;
 
 public class VentanaPartidas extends JFrame {
 
@@ -20,7 +16,11 @@ public class VentanaPartidas extends JFrame {
     private JPanel slot2;
     private JPanel slot3;
 
+    private JFrame ventanaAnterior;
+
     public VentanaPartidas(VentanaPrincipal ventanaPrincipal) {
+        this.ventanaAnterior = ventanaPrincipal;
+
         setTitle("Partidas");
         setSize(1000, 700);
         setLocationRelativeTo(null);
@@ -30,12 +30,13 @@ public class VentanaPartidas extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                ventanaPrincipal.setVisible(true);
+                if (ventanaAnterior != null) {
+                    ventanaAnterior.setVisible(true);
+                }
             }
         });
 
         inicializarComponentes();
-        inicializarEventos();
 
         setVisible(true);
     }
@@ -52,16 +53,15 @@ public class VentanaPartidas extends JFrame {
         lblTitulo.setForeground(new Color(50, 50, 50));
         lblTitulo.setBorder(new EmptyBorder(10, 0, 40, 0));
 
-        // Grid donde van a ir dentro los paneles de las partidas creadas y vacias
+        // Grid donde van a ir dentro los paneles de las partidas creadas y vacías
         JPanel panelPartidas = new JPanel(new GridLayout(1, 3, 30, 0));
         panelPartidas.setBackground(new Color(245, 245, 245));
 
-        // rellenamos los slots con los paneles de las partidas
+        // Rellenamos los slots con los paneles de las partidas
         slot1 = crearRecuadroPartida("Partida 1", DataManager.existePartida(1) ? "Ocupada" : "Vacía");
         slot2 = crearRecuadroPartida("Partida 2", DataManager.existePartida(2) ? "Ocupada" : "Vacía");
         slot3 = crearRecuadroPartida("Partida 3", DataManager.existePartida(3) ? "Ocupada" : "Vacía");
 
-        // Inicializamos los elementos del Grid
         panelPartidas.add(slot1);
         panelPartidas.add(slot2);
         panelPartidas.add(slot3);
@@ -74,7 +74,6 @@ public class VentanaPartidas extends JFrame {
 
     // Inicializamos los paneles que tendrá el Grid
     private JPanel crearRecuadroPartida(String titulo, String estado) {
-        // Definimos la forma, dimensiones y color del panel
         JPanel recuadro = new JPanel();
         recuadro.setLayout(new BoxLayout(recuadro, BoxLayout.Y_AXIS));
         recuadro.setBackground(Color.WHITE);
@@ -82,25 +81,21 @@ public class VentanaPartidas extends JFrame {
         recuadro.setPreferredSize(new Dimension(250, 300));
         recuadro.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Título principal del panel
         JLabel lblTitulo = new JLabel(titulo, SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitulo.setForeground(new Color(40, 40, 40));
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Label donde mostrara el estado de la partida, vacía u ocupado
         JLabel lblEstado = new JLabel(estado, SwingConstants.CENTER);
         lblEstado.setFont(new Font("Arial", Font.PLAIN, 20));
         lblEstado.setForeground(new Color(120, 120, 120));
         lblEstado.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Label con instrucciones
         JLabel lblTexto = new JLabel("Haz clic para continuar", SwingConstants.CENTER);
         lblTexto.setFont(new Font("Arial", Font.PLAIN, 16));
         lblTexto.setForeground(new Color(150, 150, 150));
         lblTexto.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Inicializamos los elementos del panel
         recuadro.add(Box.createVerticalGlue());
         recuadro.add(lblTitulo);
         recuadro.add(Box.createVerticalStrut(20));
@@ -112,54 +107,23 @@ public class VentanaPartidas extends JFrame {
         return recuadro;
     }
 
-    // Inicializamos los eventos de al dar click sobre los recuadros de las partidas
-    private void inicializarEventos() {
-        slot1.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                abrirSlot(1);
-            }
-        });
-
-        slot2.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                abrirSlot(2);
-            }
-        });
-
-        slot3.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                abrirSlot(3);
-            }
-        });
+    public void mostrarDialogo(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
     }
 
-    // Método para abrir la ventana dependiendo si es que hay un oartida guardada o no
-    private void abrirSlot(int slot) {
-        setVisible(false);
+    public JFrame getVentanaAnterior() {
+        return ventanaAnterior;
+    }
 
-        try {
-            if (DataManager.existePartida(slot)) {
-                src.model.Partida partida = DataManager.cargarPartida(slot);
+    public JPanel getSlot1() {
+        return slot1;
+    }
 
-                if (partida == null) {
-                    JOptionPane.showMessageDialog(this, "No se pudo cargar la partida del slot " + slot + ".");
-                    setVisible(true);
-                    return;
-                }
+    public JPanel getSlot2() {
+        return slot2;
+    }
 
-                VentanaGameplay ventanaGameplay = new VentanaGameplay(this, partida);
-                new ControladorGameplay(ventanaGameplay, partida);
-            } else {
-                VentanaInfoPartida ventanaInfoPartida = new VentanaInfoPartida(this, slot);
-                new src.controller.ControladorInfoPartida(ventanaInfoPartida, this);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Ocurrió un error al abrir el slot.");
-            setVisible(true);
-        }
+    public JPanel getSlot3() {
+        return slot3;
     }
 }

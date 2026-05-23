@@ -7,25 +7,20 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class VentanaPokedex extends JFrame {
 
-    public VentanaPokedex(VentanaPrincipal ventanaPrincipal) {
+    private JFrame ventanaAnterior;
+
+    public VentanaPokedex(JFrame ventanaAnterior) {
+        this.ventanaAnterior = ventanaAnterior;
+
         setTitle("Pokedex");
         setSize(1000, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                ventanaPrincipal.setVisible(true);
-            }
-        });
 
         inicializarComponentes();
 
@@ -37,25 +32,21 @@ public class VentanaPokedex extends JFrame {
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(new Color(245, 245, 245));
 
-        // Titulo principal
         JLabel lblTitulo = new JLabel("POKEDEX", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 40));
         lblTitulo.setForeground(new Color(160, 100, 100));
         lblTitulo.setBorder(new EmptyBorder(20, 0, 20, 0));
 
-        // Grid donde vamos a mostrar a los pokemones
         JPanel panelGrid = new JPanel(new GridLayout(0, 5, 20, 20));
         panelGrid.setBackground(new Color(245, 245, 245));
         panelGrid.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Traemos los pokemones y su informacion desde la Pokedex
         ArrayList<Pokemon> listaPokemon = Pokedex.obtenerTodosLosPokemon();
 
         for (Pokemon pokemon : listaPokemon) {
             panelGrid.add(crearTarjetaPokemon(pokemon));
         }
 
-        // Barra lateral con scroll
         JScrollPane scrollPane = new JScrollPane(panelGrid);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -74,7 +65,6 @@ public class VentanaPokedex extends JFrame {
         tarjeta.setBorder(new LineBorder(new Color(220, 190, 190), 1, true));
         tarjeta.setLayout(new BorderLayout());
 
-        // Label superior donde mostraremos el numero de id del pokemon
         JLabel lblId = new JLabel("#" + pokemon.getId());
         lblId.setFont(new Font("Arial", Font.BOLD, 16));
         lblId.setForeground(Color.WHITE);
@@ -86,7 +76,6 @@ public class VentanaPokedex extends JFrame {
         panelSuperior.setOpaque(false);
         panelSuperior.add(lblId);
 
-        // Label donde irá la imagen
         JLabel lblImagen = new JLabel();
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -99,7 +88,6 @@ public class VentanaPokedex extends JFrame {
             lblImagen.setFont(new Font("Arial", Font.PLAIN, 14));
         }
 
-        // Labels donde mostramos el nombre y tipo del pokemon
         JLabel lblNombre = new JLabel(pokemon.getNombre(), SwingConstants.CENTER);
         lblNombre.setFont(new Font("Arial", Font.BOLD, 22));
         lblNombre.setForeground(new Color(50, 50, 50));
@@ -143,5 +131,9 @@ public class VentanaPokedex extends JFrame {
         }
 
         return icono;
+    }
+
+    public JFrame getVentanaAnterior() {
+        return ventanaAnterior;
     }
 }

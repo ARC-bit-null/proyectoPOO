@@ -8,11 +8,9 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnPeleas;
     private JButton btnPokedex;
 
-    // Constructor que carga todos los elementos de la ventana
     public VentanaPrincipal() {
         configurarVentana();
         inicializarComponentes();
-        inicializarEventos();
         setVisible(true);
     }
 
@@ -28,7 +26,7 @@ public class VentanaPrincipal extends JFrame {
     // Declaramos y inicializamos los elementos de la ventana
     private void inicializarComponentes() {
         JPanel panelPrincipal = new JPanel() {
-            private Image imagenFondo = new ImageIcon("resources/layout/fondo 1.jpg.jpeg").getImage();
+            private final Image imagenFondo = new ImageIcon("resources/layout/fondo 1.jpg.jpeg").getImage();
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -45,36 +43,30 @@ public class VentanaPrincipal extends JFrame {
 
         // Título principal con imagen png
         JLabel lblTitulo = new JLabel("", SwingConstants.CENTER);
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 5, 0));
         cargarImagenTitulo(lblTitulo);
 
         // Panel central para botones
-        JPanel panelBotones = new JPanel();
-        panelBotones.setLayout(new GridBagLayout());
+        JPanel panelBotones = new JPanel(new GridBagLayout());
         panelBotones.setOpaque(false);
 
-        JPanel contenedorBotones = new JPanel();
-        contenedorBotones.setLayout(new GridLayout(2, 1, 0, 20));
+        JPanel contenedorBotones = new JPanel(new GridLayout(2, 1, 0, 20));
         contenedorBotones.setOpaque(false);
 
-        // Botones que iran dentro del panel central
+        // Botones que irán dentro del panel central
         btnPeleas = new JButton("Jugar");
         btnPokedex = new JButton("Pokedex");
 
-        // Dimensiones basicas de los botones
         Dimension tamañoBoton = new Dimension(220, 50);
         btnPeleas.setPreferredSize(tamañoBoton);
         btnPokedex.setPreferredSize(tamañoBoton);
 
-        // Tipografia del texto de los botones
         btnPeleas.setFont(new Font("Arial", Font.BOLD, 20));
         btnPokedex.setFont(new Font("Arial", Font.BOLD, 20));
 
-        // Estilo amarillo de botones
         estilizarBotonAmarillo(btnPeleas);
         estilizarBotonAmarillo(btnPokedex);
 
-        // Los agregamos al panel
         contenedorBotones.add(btnPeleas);
         contenedorBotones.add(btnPokedex);
 
@@ -94,8 +86,7 @@ public class VentanaPrincipal extends JFrame {
             int anchoOriginal = iconoOriginal.getIconWidth();
             int altoOriginal = iconoOriginal.getIconHeight();
 
-            // Escalamos por ancho y mantenemos la proporción real
-            int nuevoAncho = 520;
+            int nuevoAncho = 580;
             int nuevoAlto = (altoOriginal * nuevoAncho) / anchoOriginal;
 
             Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
@@ -116,16 +107,11 @@ public class VentanaPrincipal extends JFrame {
         boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    // Metodo para inicializar los eventos de los botones, para abrir las ventanas secundarias
-    private void inicializarEventos() {
-        btnPeleas.addActionListener(e -> {
-            setVisible(false);
-            new VentanaPartidas(this);
-        });
+    public JButton getBtnPeleas() {
+        return btnPeleas;
+    }
 
-        btnPokedex.addActionListener(e -> {
-            setVisible(false);
-            new VentanaPokedex(this);
-        });
+    public JButton getBtnPokedex() {
+        return btnPokedex;
     }
 }
