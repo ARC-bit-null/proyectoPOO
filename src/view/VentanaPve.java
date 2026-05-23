@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class VentanaPve extends JFrame {
@@ -39,6 +41,15 @@ public class VentanaPve extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (VentanaPve.this.ventanaAnterior != null) {
+                    VentanaPve.this.ventanaAnterior.setVisible(true);
+                }
+            }
+        });
 
         inicializarComponentes();
         setVisible(true);
