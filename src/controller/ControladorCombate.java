@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ControladorCombate {
 
@@ -41,7 +43,7 @@ public class ControladorCombate {
         }
     }
 
-    // Metodo para conectar los botones de la vista con la lógica del combate
+    // Metodo para conectar botones con acciones
     private void inicializarEventos() {
         ventana.getBtnAtacarJ1().addActionListener(e -> seleccionarAtaqueJugador1());
         ventana.getBtnMochilaJ1().addActionListener(e -> seleccionarMochilaJugador1());
@@ -54,7 +56,7 @@ public class ControladorCombate {
         }
     }
 
-    // Metodo para mostrar mensajes iniciales del combate
+    // Metodo para mostrar mensajes iniciales
     private void mostrarMensajesIniciales() {
         ventana.agregarMensaje(batalla.esModoPve() ? "¡Comienza el combate PvE!" : "¡Comienza el combate PvP!");
         ventana.agregarMensaje("Jugador 1 inicia con " + batalla.getPokemonActivoJugador1().getNombre() + ".");
@@ -285,17 +287,27 @@ public class ControladorCombate {
         intentarResolverRonda();
     }
 
+    // Metodo principal para resolver ronda y disparar animaciones
     private void intentarResolverRonda() {
         if (!batalla.accionesListas()) return;
 
+        EstadoVisual previo = capturarEstadoVisual();
+
         batalla.resolverRonda();
-        actualizarVistaCompleta();
-        mostrarMensajesRonda();
-        manejarCambiosObligatorios();
-        actualizarVistaCompleta();
-        verificarFinCombate();
+
+        EstadoVisual posterior = capturarEstadoVisual();
+
+        Queue<Runnable> colaAnimaciones = construirColaAnimaciones(previo, posterior);
+        reproducirColaAnimaciones(colaAnimaciones, () -> {
+            actualizarVistaCompleta();
+            mostrarMensajesRonda();
+            manejarCambiosObligatorios();
+            actualizarVistaCompleta();
+            verificarFinCombate();
+        });
     }
 
+    // Metodo para mostrar mensajes de la ronda
     private void mostrarMensajesRonda() {
         for (String mensaje : batalla.getMensajesRonda()) {
             ventana.agregarMensaje(mensaje);
@@ -313,6 +325,7 @@ public class ControladorCombate {
 
             if (indice != -1) {
                 batalla.forzarCambioJugador1(indice);
+                ventana.animarCambioJugador1(null);
             }
         }
 
@@ -325,6 +338,7 @@ public class ControladorCombate {
 
             if (indice != -1) {
                 batalla.forzarCambioJugador2(indice);
+                ventana.animarCambioJugador2(null);
             }
         }
 
@@ -352,5 +366,106 @@ public class ControladorCombate {
         } else {
             ventana.setBotonesJugador2Habilitados(!batalla.isBatallaTerminada() && !batalla.isCambioObligatorioJugador2());
         }
+    }
+
+    // Metodo para capturar el estado visual antes o despues de resolver
+    private EstadoVisual capturarEstadoVisual() {
+        EstadoVisual estado = new EstadoVisual();
+
+        Pokemon activoJ1 = batalla.getPokemonActivoJugador1();
+        Pokemon activoJ2 = batalla.getPokemonActivoJugador2();
+
+        estado.nombreJ1 = activoJ1.getNombre();
+        estado.nombreJ2 = activoJ2.getNombre();
+
+        estado.hpJ1 = activoJ1.getHp();
+        estado.hpJ2 = activoJ2.getHp();
+
+        estado.derrotadoJ1 = activoJ1.estaDerrotado();
+        estado.derrotadoJ2 = activoJ2.estaDerrotado();
+
+        return estado;
+    }
+
+    // Metodo para construir la secuencia simple de animaciones
+    private Queue<Runnable> construirColaAnimaciones(EstadoVisual previo, EstadoVisual posterior) {
+        Queue<Runnable> cola = new LinkedList<>();
+
+        boolean cambioJ1 = !previo.nombreJ1.equals(posterior.nombreJ1);
+        boolean cambioJ2 = !previo.nombreJ2.equals(posterior.nombreJ2);
+
+        boolean recibioDanioJ1 = posterior.hpJ1 < previo.hpJ1;
+        boolean recibioDanioJ2 = posterior.hpJ2 < previo.hpJ2;
+
+        boolean fueDerrotadoJ1 = !previo.derrotadoJ1 && posterior.derrotadoJ1;
+        boolean fueDerrotadoJ2 = !previo.derrotadoJ2 && posterior.derrotadoJ2;
+
+        // Si J2 recibió daño o cayó, asumimos que J1 atacó
+        if (recibioDanioJ2 || fueDerrotadoJ2) {
+            cola.add(() -> ventana.animarAtaqueJugador1(this::continuarAnimacionActual));
+            cola.add(() -> ventana.animarDanioJugador2(this::continuarAnimacionActual));
+        }
+
+        // Si J1 recibió daño o cayó, asumimos que J2 atacó
+        if (recibioDanioJ1 || fueDerrotadoJ1) {
+            cola.add(() -> ventana.animarAtaqueJugador2(this::continuarAnimacionActual));
+            cola.add(() -> ventana.animarDanioJugador1(this::continuarAnimacionActual));
+        }
+
+        if (fueDerrotadoJ1) {
+            cola.add(() -> ventana.animarDerrotaJugador1(this::continuarAnimacionActual));
+        }
+
+        if (fueDerrotadoJ2) {
+            cola.add(() -> ventana.animarDerrotaJugador2(this::continuarAnimacionActual));
+        }
+
+        if (cambioJ1) {
+            cola.add(() -> ventana.animarCambioJugador1(this::continuarAnimacionActual));
+        }
+
+        if (cambioJ2) {
+            cola.add(() -> ventana.animarCambioJugador2(this::continuarAnimacionActual));
+        }
+
+        return cola;
+    }
+
+    private Queue<Runnable> colaActualAnimaciones;
+    private Runnable callbackFinalAnimaciones;
+
+    // Metodo para ejecutar animaciones una por una
+    private void reproducirColaAnimaciones(Queue<Runnable> colaAnimaciones, Runnable alFinal) {
+        this.colaActualAnimaciones = colaAnimaciones;
+        this.callbackFinalAnimaciones = alFinal;
+        continuarAnimacionActual();
+    }
+
+    // Metodo para seguir con la siguiente animacion
+    private void continuarAnimacionActual() {
+        if (colaActualAnimaciones == null || colaActualAnimaciones.isEmpty()) {
+            if (callbackFinalAnimaciones != null) {
+                Runnable fin = callbackFinalAnimaciones;
+                callbackFinalAnimaciones = null;
+                colaActualAnimaciones = null;
+                fin.run();
+            }
+            return;
+        }
+
+        Runnable animacion = colaActualAnimaciones.poll();
+        if (animacion != null) {
+            animacion.run();
+        }
+    }
+
+    // Clase simple para guardar estado visual
+    private static class EstadoVisual {
+        private String nombreJ1;
+        private String nombreJ2;
+        private int hpJ1;
+        private int hpJ2;
+        private boolean derrotadoJ1;
+        private boolean derrotadoJ2;
     }
 }

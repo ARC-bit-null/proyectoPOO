@@ -1,5 +1,7 @@
 package src.view;
 
+import src.animation.AnimadorCombate;
+import src.animation.PanelFlash;
 import src.model.InventarioCombate;
 import src.model.Pokemon;
 
@@ -34,6 +36,14 @@ public class VentanaCombate extends JFrame {
     private JProgressBar barraHpJ2;
     private JLabel lblSpriteJ2;
 
+    // Paneles donde vive el sprite para poder moverlo libremente
+    private JPanel panelSpriteJ1;
+    private JPanel panelSpriteJ2;
+
+    // Overlay rojo para flash de daño
+    private PanelFlash flashJ1;
+    private PanelFlash flashJ2;
+
     // Labels para mostrar los objetos restantes
     private JLabel lblObjetosJ1;
     private JLabel lblObjetosJ2;
@@ -51,6 +61,9 @@ public class VentanaCombate extends JFrame {
     private JButton btnMochilaJ2;
     private JButton btnCambioJ2;
 
+    // Animador principal del combate
+    private AnimadorCombate animadorCombate;
+
     public VentanaCombate(JFrame ventanaAnterior, String tituloVentana) {
         this.ventanaAnterior = ventanaAnterior;
 
@@ -62,6 +75,11 @@ public class VentanaCombate extends JFrame {
 
         inicializarComponentes();
         setVisible(true);
+
+        SwingUtilities.invokeLater(() -> {
+            animadorCombate.guardarPosicionesBase();
+            animarEntradaInicial();
+        });
     }
 
     // Metodo donde inicializamos todos los elementos visuales
@@ -116,6 +134,8 @@ public class VentanaCombate extends JFrame {
         panelPrincipal.add(panelContenido, BorderLayout.CENTER);
 
         add(panelPrincipal);
+
+        animadorCombate = new AnimadorCombate(lblSpriteJ1, lblSpriteJ2, flashJ1, flashJ2);
     }
 
     // Metodo para crear el panel de acciones de cada jugador
@@ -206,16 +226,29 @@ public class VentanaCombate extends JFrame {
         panelInfo.add(Box.createVerticalStrut(10));
         panelInfo.add(lblStats);
 
+        JPanel panelSprite = new JPanel(null);
+        panelSprite.setBackground(Color.WHITE);
+        panelSprite.setPreferredSize(new Dimension(260, 220));
+
         JLabel lblSprite = new JLabel("", SwingConstants.CENTER);
         lblSprite.setFont(new Font("Arial", Font.BOLD, 24));
         lblSprite.setForeground(new Color(130, 130, 130));
-        lblSprite.setBorder(new EmptyBorder(20, 20, 20, 20));
-        lblSprite.setPreferredSize(new Dimension(260, 220));
+        lblSprite.setBounds(20, 0, 220, 220);
         lblSprite.setText("Sin imagen");
+
+        PanelFlash flash = new PanelFlash(new Color(255, 60, 60, 90));
+        flash.setBounds(20, 0, 220, 220);
+
+        panelSprite.add(lblSprite);
+        panelSprite.add(flash);
+
+        // El flash debe quedar encima del sprite
+        panelSprite.setComponentZOrder(lblSprite, 1);
+        panelSprite.setComponentZOrder(flash, 0);
 
         if (jugador == 2) {
             panel.add(panelInfo, BorderLayout.WEST);
-            panel.add(lblSprite, BorderLayout.CENTER);
+            panel.add(panelSprite, BorderLayout.CENTER);
 
             lblNombreJ2 = lblNombre;
             lblNivelJ2 = lblNivel;
@@ -223,8 +256,10 @@ public class VentanaCombate extends JFrame {
             lblStatsJ2 = lblStats;
             barraHpJ2 = barraHp;
             lblSpriteJ2 = lblSprite;
+            panelSpriteJ2 = panelSprite;
+            flashJ2 = flash;
         } else {
-            panel.add(lblSprite, BorderLayout.WEST);
+            panel.add(panelSprite, BorderLayout.WEST);
             panel.add(panelInfo, BorderLayout.CENTER);
 
             lblNombreJ1 = lblNombre;
@@ -233,9 +268,49 @@ public class VentanaCombate extends JFrame {
             lblStatsJ1 = lblStats;
             barraHpJ1 = barraHp;
             lblSpriteJ1 = lblSprite;
+            panelSpriteJ1 = panelSprite;
+            flashJ1 = flash;
         }
 
         return panel;
+    }
+
+    // Metodo para animar la entrada de ambos sprites
+    private void animarEntradaInicial() {
+        animadorCombate.animarEntradaJugador2(null);
+        animadorCombate.animarEntradaJugador1(null);
+    }
+
+    public void animarAtaqueJugador1(Runnable alFinal) {
+        animadorCombate.animarAtaqueJugador1(alFinal);
+    }
+
+    public void animarAtaqueJugador2(Runnable alFinal) {
+        animadorCombate.animarAtaqueJugador2(alFinal);
+    }
+
+    public void animarDanioJugador1(Runnable alFinal) {
+        animadorCombate.animarDanioJugador1(alFinal);
+    }
+
+    public void animarDanioJugador2(Runnable alFinal) {
+        animadorCombate.animarDanioJugador2(alFinal);
+    }
+
+    public void animarDerrotaJugador1(Runnable alFinal) {
+        animadorCombate.animarDerrotaJugador1(alFinal);
+    }
+
+    public void animarDerrotaJugador2(Runnable alFinal) {
+        animadorCombate.animarDerrotaJugador2(alFinal);
+    }
+
+    public void animarCambioJugador1(Runnable alFinal) {
+        animadorCombate.animarCambioJugador1(alFinal);
+    }
+
+    public void animarCambioJugador2(Runnable alFinal) {
+        animadorCombate.animarCambioJugador2(alFinal);
     }
 
     // Metodo para actualizar el título principal
@@ -257,6 +332,9 @@ public class VentanaCombate extends JFrame {
         barraHpJ1.setString(pokemon.getHp() + "/" + pokemon.getHpMax());
 
         actualizarSprite(lblSpriteJ1, pokemon.getImagenTrasera(), 220, 220);
+        lblSpriteJ1.setVisible(true);
+        flashJ1.setVisible(false);
+        animadorCombate.restaurarPosicionesBase();
     }
 
     // Metodo para actualizar el panel del Jugador 2
@@ -273,6 +351,9 @@ public class VentanaCombate extends JFrame {
         barraHpJ2.setString(pokemon.getHp() + "/" + pokemon.getHpMax());
 
         actualizarSprite(lblSpriteJ2, pokemon.getImagenFrontal(), 220, 220);
+        lblSpriteJ2.setVisible(true);
+        flashJ2.setVisible(false);
+        animadorCombate.restaurarPosicionesBase();
     }
 
     public void actualizarObjetosJugador1(InventarioCombate inventario) {

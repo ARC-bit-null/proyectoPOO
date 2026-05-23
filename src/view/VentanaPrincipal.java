@@ -1,4 +1,5 @@
 package src.view;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -26,41 +27,54 @@ public class VentanaPrincipal extends JFrame {
 
     // Declaramos y inicializamos los elementos de la ventana
     private void inicializarComponentes() {
-        JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setLayout(new BorderLayout());
-        panelPrincipal.setBackground(new Color(245, 245, 245));
+        JPanel panelPrincipal = new JPanel() {
+            private Image imagenFondo = new ImageIcon("resources/layout/fondo 1.jpg.jpeg").getImage();
 
-        // Título Principal
-        JLabel lblTitulo = new JLabel("Pokémon", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 108));
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                if (imagenFondo != null) {
+                    g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+
+        panelPrincipal.setLayout(new BorderLayout());
+        panelPrincipal.setOpaque(false);
+
+        // Título principal con imagen png
+        JLabel lblTitulo = new JLabel("", SwingConstants.CENTER);
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
+        cargarImagenTitulo(lblTitulo);
 
         // Panel central para botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new GridBagLayout());
-        panelBotones.setBackground(new Color(245, 245, 245));
+        panelBotones.setOpaque(false);
 
         JPanel contenedorBotones = new JPanel();
         contenedorBotones.setLayout(new GridLayout(2, 1, 0, 20));
-        contenedorBotones.setBackground(new Color(245, 245, 245));
+        contenedorBotones.setOpaque(false);
 
         // Botones que iran dentro del panel central
         btnPeleas = new JButton("Jugar");
         btnPokedex = new JButton("Pokedex");
 
-        // Dimenciones basicas de los botones
+        // Dimensiones basicas de los botones
         Dimension tamañoBoton = new Dimension(220, 50);
         btnPeleas.setPreferredSize(tamañoBoton);
         btnPokedex.setPreferredSize(tamañoBoton);
 
         // Tipografia del texto de los botones
-        btnPeleas.setFont(new Font("Arial", Font.PLAIN, 20));
-        btnPokedex.setFont(new Font("Arial", Font.PLAIN, 20));
+        btnPeleas.setFont(new Font("Arial", Font.BOLD, 20));
+        btnPokedex.setFont(new Font("Arial", Font.BOLD, 20));
 
-        btnPeleas.setFocusPainted(false);
-        btnPokedex.setFocusPainted(false);
+        // Estilo amarillo de botones
+        estilizarBotonAmarillo(btnPeleas);
+        estilizarBotonAmarillo(btnPokedex);
 
-        // Los agregamos al Panel
+        // Los agregamos al panel
         contenedorBotones.add(btnPeleas);
         contenedorBotones.add(btnPokedex);
 
@@ -70,6 +84,36 @@ public class VentanaPrincipal extends JFrame {
         panelPrincipal.add(panelBotones, BorderLayout.CENTER);
 
         add(panelPrincipal);
+    }
+
+    // Metodo para cargar la imagen del titulo
+    private void cargarImagenTitulo(JLabel lblTitulo) {
+        ImageIcon iconoOriginal = new ImageIcon("resources/layout/InicioPokemon.png");
+
+        if (iconoOriginal.getIconWidth() > 0) {
+            int anchoOriginal = iconoOriginal.getIconWidth();
+            int altoOriginal = iconoOriginal.getIconHeight();
+
+            // Escalamos por ancho y mantenemos la proporción real
+            int nuevoAncho = 520;
+            int nuevoAlto = (altoOriginal * nuevoAncho) / anchoOriginal;
+
+            Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+            lblTitulo.setIcon(new ImageIcon(imagenEscalada));
+        } else {
+            lblTitulo.setText("Pokémon");
+            lblTitulo.setFont(new Font("Arial", Font.BOLD, 72));
+        }
+    }
+
+    // Metodo para dar estilo amarillo a los botones
+    private void estilizarBotonAmarillo(JButton boton) {
+        boton.setBackground(new Color(255, 204, 0));
+        boton.setForeground(Color.BLACK);
+        boton.setFocusPainted(false);
+        boton.setBorderPainted(false);
+        boton.setOpaque(true);
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     // Metodo para inicializar los eventos de los botones, para abrir las ventanas secundarias
